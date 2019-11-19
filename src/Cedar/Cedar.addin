@@ -1,0 +1,14 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<RevitAddIns>
+  <AddIn Type="Command">
+    <Name>Cedar</Name>
+    <FullClassName>Jpp.Cedar.Class1</FullClassName>
+    <Text>Import Table</Text>
+    <Description>Places the Group at Particular Point</Description>
+    <VisibilityMode>AlwaysVisible</VisibilityMode>
+    <Assembly>C:\Repos\Cedar\src\Cedar\bin\Debug\Cedar.dll</Assembly>
+    <AddInId>af995de3-b67f-4bd1-96b8-f0c2da44d780</AddInId>
+    <VendorId>JPP</VendorId>
+    <VendorDescription>Jpp Consulting</VendorDescription>
+  </AddIn>
+</RevitAddIns>
