@@ -3,7 +3,9 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 16
 VisualStudioVersion = 16.0.29418.71
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Cedar", "src\Cedar\Cedar.csproj", "{0CDA0075-6542-4DBC-ABB0-86B7313F9191}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Piling", "src\Piling\Piling.csproj", "{19C78C67-15E5-4768-9018-9730FD14F1E3}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Cedar", "src\Cedar\Cedar.csproj", "{784517B7-0F92-4401-BCBF-CD2E1FB5FDFB}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -11,10 +13,14 @@ Global
 		Release|Any CPU = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{0CDA0075-6542-4DBC-ABB0-86B7313F9191}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{0CDA0075-6542-4DBC-ABB0-86B7313F9191}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{0CDA0075-6542-4DBC-ABB0-86B7313F9191}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{0CDA0075-6542-4DBC-ABB0-86B7313F9191}.Release|Any CPU.Build.0 = Release|Any CPU
+		{19C78C67-15E5-4768-9018-9730FD14F1E3}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{19C78C67-15E5-4768-9018-9730FD14F1E3}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{19C78C67-15E5-4768-9018-9730FD14F1E3}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{19C78C67-15E5-4768-9018-9730FD14F1E3}.Release|Any CPU.Build.0 = Release|Any CPU
+		{784517B7-0F92-4401-BCBF-CD2E1FB5FDFB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{784517B7-0F92-4401-BCBF-CD2E1FB5FDFB}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{784517B7-0F92-4401-BCBF-CD2E1FB5FDFB}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{784517B7-0F92-4401-BCBF-CD2E1FB5FDFB}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
