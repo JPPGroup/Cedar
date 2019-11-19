@@ -6,6 +6,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Media.Imaging;
 using Autodesk.Revit.UI;
+using Jpp.Cedar.Piling;
 
 namespace Jpp.Cedar
 {
@@ -31,6 +32,8 @@ namespace Jpp.Cedar
             /*Uri uriImage = new Uri(@"D:\Sample\HelloWorld\bin\Debug\39-Globe_32x32.png");
             BitmapImage largeImage = new BitmapImage(uriImage);
             pushButton.LargeImage = largeImage;*/
+
+            PilingUpdater.Register(application);
 
             return Result.Succeeded;
         }

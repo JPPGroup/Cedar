@@ -77,11 +77,19 @@
     <Analyzer Include="..\..\packages\Microsoft.NetFramework.Analyzers.2.9.7\analyzers\dotnet\cs\Microsoft.NetFramework.Analyzers.dll" />
     <Analyzer Include="..\..\packages\Microsoft.NetFramework.Analyzers.2.9.7\analyzers\dotnet\cs\Microsoft.NetFramework.CSharp.Analyzers.dll" />
   </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Piling\Piling.csproj">
+      <Project>{19c78c67-15e5-4768-9018-9730fd14f1e3}</Project>
+      <Name>Piling</Name>
+    </ProjectReference>
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
     <!-- Force the project to use the legacy debugger engine -->
     <DebugEngines>{351668CC-8477-4fbf-BFE3-5F1006E4DB1F}</DebugEngines>
-    <PostBuildEvent>xcopy "$(SolutionDir)src\Cedar\Cedar.addin" "C:\ProgramData\Autodesk\Revit\Addins\2017" /i /e /y /c</PostBuildEvent>
+    <PostBuildEvent>xcopy "$(SolutionDir)src\Cedar\Cedar.addin" "C:\ProgramData\Autodesk\Revit\Addins\2017" /y /c
+
+xcopy "$(TargetDir)*" "C:\ProgramData\Autodesk\Revit\Addins\2017\Cedar" /S /Y /I</PostBuildEvent>
   </PropertyGroup>
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
     <PropertyGroup>
