@@ -1,11 +1,7 @@
 ﻿using Autodesk.Revit.DB;
 using System;
 using System.Collections.Generic;
-using System.IO;
-using System.Net.Mime;
 using Autodesk.Revit.ApplicationServices;
-using Autodesk.Revit.UI;
-using Autodesk.Revit.DB.Structure;
 using Jpp.Cedar.Core;
 
 namespace Jpp.Cedar.Piling
@@ -14,76 +10,56 @@ namespace Jpp.Cedar.Piling
     {
         AddInId _appId;
         UpdaterId _updaterId;
-        bool registered = false;
-        public Definition eastingDefintiion { get; set; }
 
-        public PilingUpdater(AddInId id)
+        ISharedParameterManager _spManager;
+
+        bool registered = false;
+        Definition _eastingDefinition, _northingDefinition, _cutOffDefinition;
+
+        public PilingUpdater(AddInId id, ISharedParameterManager spManager)
         {
+            if (id == null)
+                throw new System.ArgumentNullException(nameof(id));
+
+            if (spManager == null)
+                throw new System.ArgumentNullException(nameof(spManager));
+
             _appId = id;
             _updaterId = new UpdaterId(_appId, new Guid("ddb23f37-892e-4b43-9e8a-0ad8ff381b2b"));
+            _spManager = spManager;
+
+            _eastingDefinition = _spManager.RegisterParameter("Piling", "Easting", ParameterType.Length, false, "Easting");
+            _northingDefinition = _spManager.RegisterParameter("Piling", "Northing", ParameterType.Length, false, "Northing");
+            _cutOffDefinition = _spManager.RegisterParameter("Piling", "Cut-Off", ParameterType.Length, false, "Cut Off Level");
         }
 
-        public static void Register(UIControlledApplication application)
+        public static void Register(Application application, ISharedParameterManager sharedParameterManager)
         {
-            PilingUpdater updater = new PilingUpdater(application.ActiveAddInId);
+            if (application == null)
+                throw new System.ArgumentNullException(nameof(application));
+
+            if (sharedParameterManager == null)
+                throw new System.ArgumentNullException(nameof(sharedParameterManager));
+
+            PilingUpdater updater = new PilingUpdater(application.ActiveAddInId, sharedParameterManager);
             UpdaterRegistry.RegisterUpdater(updater);
             
             ElementCategoryFilter filter = new ElementCategoryFilter(BuiltInCategory.OST_StructuralFoundation);
-            UpdaterRegistry.AddTrigger(updater.GetUpdaterId(), filter, Element.GetChangeTypeGeometry());
-
-            //TODO: Move to config file
-            string path = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) + "\\JPP Consulting\\Cedar\\SharedParameters.txt";
-            string directory = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) + "\\JPP Consulting\\Cedar";
-            if (!File.Exists(path))
-            {
-                Directory.CreateDirectory(directory);
-                FileStream fs = File.Create(path);
-                fs.Close();
-            }
-
-            application.ControlledApplication.SharedParametersFilename = path;
-            DefinitionFile defFile = application.ControlledApplication.OpenSharedParameterFile();
-
-            
-            DefinitionGroup pilingGroup = defFile.Groups.get_Item("Piling");
-            if (pilingGroup == null)
-            {
-                pilingGroup = defFile.Groups.Create("Piling");
-            }
-
-            updater.eastingDefintiion = pilingGroup.Definitions.get_Item("Instance_Easting");
-
-            if (updater.eastingDefintiion == null)
-            {
-                ExternalDefinitionCreationOptions easting = new ExternalDefinitionCreationOptions("Instance_Easting", ParameterType.Length);
-                easting.UserModifiable = false;
-                easting.Description = "Wall product date";
-                updater.eastingDefintiion = pilingGroup.Definitions.Create(easting);
-            }
+            UpdaterRegistry.AddTrigger(updater.GetUpdaterId(), filter, Element.GetChangeTypeGeometry());            
         }
 
         public void RegisterDocument(Document document)
-        {       
-            // create a category set and insert category of wall to it
-            CategorySet myCategories = document.Application.Create.NewCategorySet();
-            // use BuiltInCategory to get category of wall
-            Category myCategory = Category.GetCategory(document, BuiltInCategory.OST_StructuralFoundation);
-
-            myCategories.Insert(myCategory);
-
-            //Create an instance of InstanceBinding
-            InstanceBinding instanceBinding = document.Application.Create.NewInstanceBinding(myCategories);
-
-            // Get the BingdingMap of current document.
-            BindingMap bindingMap = document.ParameterBindings;
-
-            // Bind the definitions to the document
-            bool instanceBindOK = bindingMap.Insert(eastingDefintiion,
-                instanceBinding, BuiltInParameterGroup.INVALID);
+        {
+            _spManager.BindParameters(document, _eastingDefinition);
+            _spManager.BindParameters(document, _northingDefinition);
+            _spManager.BindParameters(document, _cutOffDefinition);
         }
 
         public void Execute(UpdaterData data)
         {
+            if (data == null)
+                throw new System.ArgumentNullException(nameof(data));
+
 
             Document document = data.GetDocument();
 
@@ -103,43 +79,21 @@ namespace Jpp.Cedar.Piling
                    
                     foreach (Parameter para in foundation.Parameters)
                     {
-                        if (para.Definition.Name.Equals("Instance_Easting", StringComparison.OrdinalIgnoreCase))
+                        if (para.Definition.Name.Equals(_eastingDefinition.Name, StringComparison.CurrentCultureIgnoreCase))
                         {
-                            //para.SetValueString(location.X.ToString());
                             para.Set(location.X);
+                        }
+                        if (para.Definition.Name.Equals(_northingDefinition.Name, StringComparison.CurrentCultureIgnoreCase))
+                        {
+                            para.Set(location.Y);
+                        }
+                        if (para.Definition.Name.Equals(_cutOffDefinition.Name, StringComparison.CurrentCultureIgnoreCase))
+                        {
+                            para.Set(location.Z);
                         }
                     }
                 }
             }
-
-
-            // Cache the wall type
-            /*if (m_wallType == null)
-            {
-                FilteredElementCollector collector = new FilteredElementCollector(doc);
-                collector.OfClass(typeof(WallType));
-                var wallTypes = from element in collector
-                    where
-                        element.Name == "Exterior - Brick on CMU"
-                    select element;
-                if (wallTypes.Count() > 0)
-                {
-                    m_wallType = wallTypes.Cast().ElementAt(0);
-                }
-            }
-
-            if (m_wallType != null)
-            {
-                // Change the wall to the cached wall type.
-                foreach (ElementId addedElemId in data.GetAddedElementIds())
-                {
-                    Wall wall = doc.GetElement(addedElemId) as Wall;
-                    if (wall != null)
-                    {
-                        wall.WallType = m_wallType;
-                    }
-                }
-            }*/
         }
 
         public string GetAdditionalInformation()

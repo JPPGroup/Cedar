@@ -28,6 +28,7 @@
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
+    <PlatformTarget>x64</PlatformTarget>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
@@ -36,6 +37,7 @@
     <DefineConstants>TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
+    <PlatformTarget>x64</PlatformTarget>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="PresentationCore" />
@@ -78,6 +80,10 @@
     <Analyzer Include="..\..\packages\Microsoft.NetFramework.Analyzers.2.9.7\analyzers\dotnet\cs\Microsoft.NetFramework.CSharp.Analyzers.dll" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\CedarCore\CedarCore.csproj">
+      <Project>{27ee896c-a09a-4a5d-a995-c2a4043fb871}</Project>
+      <Name>CedarCore</Name>
+    </ProjectReference>
     <ProjectReference Include="..\Piling\Piling.csproj">
       <Project>{19c78c67-15e5-4768-9018-9730fd14f1e3}</Project>
       <Name>Piling</Name>

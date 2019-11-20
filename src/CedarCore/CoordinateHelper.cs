@@ -1,9 +1,4 @@
 ﻿using Autodesk.Revit.DB;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Jpp.Cedar.Core
 {
@@ -11,6 +6,13 @@ namespace Jpp.Cedar.Core
     {
         public static XYZ GetWorldCoordinates(Document document, XYZ localCoordinate)
         {
+            if(document == null)
+                throw new System.ArgumentNullException(nameof(document));
+
+            if (localCoordinate == null)
+                throw new System.ArgumentNullException(nameof(localCoordinate));
+
+            //TODO: Ensure this method works for all 3(!) cooridnate systems
             /*FilteredElementCollector locations = new FilteredElementCollector(document).OfClass(typeof(BasePoint));
             foreach (var locationPoint in locations)
             {
@@ -21,7 +23,6 @@ namespace Jpp.Cedar.Core
                 double projectSurvpntZ = basePoint.get_Parameter(BuiltInParameter.BASEPOINT_ELEVATION_PARAM).AsDouble();
                 //XYZ loc = (basePoint.Location as LocationPoint).Point;
             }*/
-
 
             ProjectPosition projectPosition = document.ActiveProjectLocation.get_ProjectPosition(XYZ.Zero);
             // Create a translation vector for the offsets
