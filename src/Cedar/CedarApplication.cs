@@ -42,11 +42,13 @@ namespace Jpp.Cedar
         /// <param name="e">Event args</param>
         private void ControlledApplication_ApplicationInitialized(object sender, ApplicationInitializedEventArgs e)
         {
+            Application application = (Application) sender;
+
             //Initialize shared components
-            ISharedParameterManager sharedParameterManager = new SharedParameterManager(sender as Application);
+            ISharedParameterManager sharedParameterManager = new SharedParameterManager(application);
 
             //Register updaters
-            PilingUpdater.Register(sender as Application, sharedParameterManager);
+            PilingUpdater.Register(application, sharedParameterManager);
         }
 
         /// <summary>

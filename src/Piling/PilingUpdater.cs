@@ -8,7 +8,6 @@ namespace Jpp.Cedar.Piling
 {
     public class PilingUpdater : IUpdater
     {
-        AddInId _appId;
         UpdaterId _updaterId;
 
         ISharedParameterManager _spManager;
@@ -21,12 +20,8 @@ namespace Jpp.Cedar.Piling
             if (id == null)
                 throw new System.ArgumentNullException(nameof(id));
 
-            if (spManager == null)
-                throw new System.ArgumentNullException(nameof(spManager));
-
-            _appId = id;
-            _updaterId = new UpdaterId(_appId, new Guid("ddb23f37-892e-4b43-9e8a-0ad8ff381b2b"));
-            _spManager = spManager;
+            _spManager = spManager ?? throw new System.ArgumentNullException(nameof(spManager));
+            _updaterId = new UpdaterId(id, new Guid("ddb23f37-892e-4b43-9e8a-0ad8ff381b2b"));
 
             _eastingDefinition = _spManager.RegisterParameter("Piling", "Easting", ParameterType.Length, false, "Easting");
             _northingDefinition = _spManager.RegisterParameter("Piling", "Northing", ParameterType.Length, false, "Northing");
@@ -75,7 +70,7 @@ namespace Jpp.Cedar.Piling
                 Element foundation = document.GetElement(id);
                 if (foundation.Location != null)
                 {
-                    XYZ location = CoordinateHelper.GetWorldCoordinates(document, (foundation.Location as LocationPoint).Point);
+                    XYZ location = CoordinateHelper.GetWorldCoordinates(document, ((LocationPoint)foundation.Location).Point);
                    
                     foreach (Parameter para in foundation.Parameters)
                     {
