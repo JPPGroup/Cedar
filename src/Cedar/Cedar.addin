@@ -2,7 +2,7 @@
 <RevitAddIns>
   <AddIn Type="Application">
     <Name>Cedar</Name>
-    <Assembly>E:\Repos\Cedar\src\Cedar\bin\Debug\Cedar.dll</Assembly>
+    <Assembly>Cedar\Cedar.dll</Assembly>
     <AddInId>af995de3-b67f-4bd1-96b8-f0c2da44d780</AddInId>
     <FullClassName>Jpp.Cedar.CedarApplication</FullClassName>
     <VendorId>JPP</VendorId>
