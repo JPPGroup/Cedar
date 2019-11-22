@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using Autodesk.Revit.ApplicationServices;
 using Jpp.Cedar.Core;
+using Microsoft.AppCenter.Analytics;
 
 namespace Jpp.Cedar.Piling
 {
@@ -89,6 +90,11 @@ namespace Jpp.Cedar.Piling
                     }
                 }
             }
+
+            Analytics.TrackEvent("Updater Ran", new Dictionary<string, string> {
+                { "Updater", GetUpdaterName() },
+                { "UpdatedObjects", modifiedElementIds.Count.ToString() }
+            });
         }
 
         public string GetAdditionalInformation()

@@ -1,9 +1,12 @@
-﻿using System.Reflection;
+﻿using System.Collections.Generic;
 using Autodesk.Revit.ApplicationServices;
 using Autodesk.Revit.DB.Events;
 using Autodesk.Revit.UI;
 using Jpp.Cedar.Core;
 using Jpp.Cedar.Piling;
+using Microsoft.AppCenter;
+using Microsoft.AppCenter.Analytics;
+using Microsoft.AppCenter.Crashes;
 
 namespace Jpp.Cedar
 {
@@ -16,7 +19,11 @@ namespace Jpp.Cedar
         /// <returns>Result of add-in load</returns>
         public Result OnStartup(UIControlledApplication application)
         {
-            if(application == null)
+#if !DEBUG
+            AppCenter.Start("a0e1a19a-93dc-4e1e-bf4a-a8dfb1556a77", typeof(Analytics), typeof(Crashes));
+#endif
+
+            if (application == null)
                 throw new System.ArgumentNullException(nameof(application));
 
 #if DEBUG
@@ -32,6 +39,8 @@ namespace Jpp.Cedar
 #endif
             application.ControlledApplication.ApplicationInitialized += ControlledApplication_ApplicationInitialized;
 
+
+            Analytics.TrackEvent("Addin Started");
             return Result.Succeeded;
         }
 
@@ -49,6 +58,7 @@ namespace Jpp.Cedar
 
             //Register updaters
             PilingUpdater.Register(application, sharedParameterManager);
+            Analytics.TrackEvent("Addin Initialized");
         }
 
         /// <summary>
@@ -58,6 +68,7 @@ namespace Jpp.Cedar
         /// <returns>Result of add-in termination</returns>
         public Result OnShutdown(UIControlledApplication application)
         {
+            Analytics.TrackEvent("Addin Stopped");
             return Result.Succeeded;
         }
     }
