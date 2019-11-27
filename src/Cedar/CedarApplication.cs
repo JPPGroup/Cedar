@@ -46,9 +46,11 @@ namespace Jpp.Cedar
 
             //Initialize shared components
             ISharedParameterManager sharedParameterManager = new SharedParameterManager(application);
+            PilingCoordinator pilingCoordinator = new PilingCoordinator(sharedParameterManager);
 
             //Register updaters
-            PilingUpdater.Register(application, sharedParameterManager);
+            PilingUpdater.Register(application, pilingCoordinator);
+            CoordinatePilingUpdater.Register(application, pilingCoordinator);
         }
 
         /// <summary>
