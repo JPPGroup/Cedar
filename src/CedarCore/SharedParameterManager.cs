@@ -49,7 +49,7 @@ namespace Jpp.Cedar.Core
             }
         }
 
-        public Definition RegisterParameter(string groupName, string parameterName, ParameterType parameterType, bool editable, string description)
+        public Definition RegisterParameter(string groupName, string parameterName, ParameterType parameterType, bool editable, string description, Guid id)
         {
             Definition result;
 
@@ -63,6 +63,7 @@ namespace Jpp.Cedar.Core
                 fs.Close();
             }
 
+            string currentPaath = _application.SharedParametersFilename;
             _application.SharedParametersFilename = path;
             //Why does disposing the file throw an invalid exception?!?!?!?!?!?
             /*using (DefinitionFile defFile = _application.OpenSharedParameterFile())
@@ -82,9 +83,11 @@ namespace Jpp.Cedar.Core
                         new ExternalDefinitionCreationOptions(parameterName, parameterType);
                     newDefinition.UserModifiable = editable;
                     newDefinition.Description = description;
+                    newDefinition.GUID = id;
                     result = pilingGroup.Definitions.Create(newDefinition);
                 }
 
+                _application.SharedParametersFilename = currentPaath;
                 return result;
             //}
         }

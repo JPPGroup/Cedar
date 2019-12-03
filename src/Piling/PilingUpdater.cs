@@ -44,7 +44,6 @@ namespace Jpp.Cedar.Piling
             if (data == null)
                 throw new System.ArgumentNullException(nameof(data));
 
-
             Document document = data.GetDocument();
 
             if (!registered)
