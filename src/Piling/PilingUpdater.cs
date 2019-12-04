@@ -7,12 +7,11 @@ namespace Jpp.Cedar.Piling
 {
     public class PilingUpdater : IUpdater
     {
-        UpdaterId _updaterId;
-        PilingCoordinator _pilingCoordinator;      
+        private UpdaterId _updaterId;
+        private PilingCoordinator _pilingCoordinator;      
 
-        bool registered = false;
+        private bool registered = false;
         
-
         public PilingUpdater(AddInId id, PilingCoordinator coordinator)
         {
             if (id == null)

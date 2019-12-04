@@ -9,7 +9,8 @@ namespace Jpp.Cedar.Core
     public class SharedParameterManager : ISharedParameterManager
     {
 
-        Application _application;
+        private Application _application;
+
         public SharedParameterManager(Application application)
         {
             _application = application;
@@ -63,7 +64,7 @@ namespace Jpp.Cedar.Core
                 fs.Close();
             }
 
-            string currentPaath = _application.SharedParametersFilename;
+            string currentPath = _application.SharedParametersFilename;
             _application.SharedParametersFilename = path;
             //Why does disposing the file throw an invalid exception?!?!?!?!?!?
             /*using (DefinitionFile defFile = _application.OpenSharedParameterFile())
@@ -87,7 +88,7 @@ namespace Jpp.Cedar.Core
                     result = pilingGroup.Definitions.Create(newDefinition);
                 }
 
-                _application.SharedParametersFilename = currentPaath;
+                _application.SharedParametersFilename = currentPath;
                 return result;
             //}
         }

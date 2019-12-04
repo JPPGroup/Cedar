@@ -6,8 +6,8 @@ namespace Jpp.Cedar.Piling
 {
     public class PilingCoordinator
     {
-        Definition _eastingDefinition, _northingDefinition, _cutOffDefinition, _permanentLoad, _variableLoad, _windVertical, _windHorizontal;
-        ISharedParameterManager _spManager;
+        private Definition _eastingDefinition, _northingDefinition, _cutOffDefinition, _permanentLoad, _variableLoad, _windVertical, _windHorizontal;
+        private ISharedParameterManager _spManager;
 
         public PilingCoordinator(ISharedParameterManager spManager)
         {
