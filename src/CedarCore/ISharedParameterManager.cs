@@ -1,9 +1,5 @@
 ﻿using Autodesk.Revit.DB;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Jpp.Cedar.Core
 {
@@ -25,7 +21,8 @@ namespace Jpp.Cedar.Core
         /// <param name="parameterType">Type</param>
         /// <param name="editable">User editable</param>
         /// <param name="description">Description</param>
+        /// <param name="id">Guid to identify the parameter</param>
         /// <returns></returns>
-        Definition RegisterParameter(string groupName, string parameterName, ParameterType parameterType, bool editable, string description);
+        Definition RegisterParameter(string groupName, string parameterName, ParameterType parameterType, bool editable, string description, Guid id);
     }
 }
