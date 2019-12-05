@@ -1,4 +1,5 @@
-﻿using System.Reflection;
+﻿using System;
+using System.Reflection;
 using Autodesk.Revit.ApplicationServices;
 using Autodesk.Revit.DB.Events;
 using Autodesk.Revit.UI;
@@ -29,9 +30,9 @@ namespace Jpp.Cedar
 
             PushButton pushButton = ribbonPanel.AddItem(buttonData) as PushButton;
             pushButton.ToolTip = "Say hello to the entire world.";
+            Console.WriteLine("Debug");
 #endif
             application.ControlledApplication.ApplicationInitialized += ControlledApplication_ApplicationInitialized;
-
             return Result.Succeeded;
         }
 
