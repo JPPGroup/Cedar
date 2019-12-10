@@ -36,25 +36,30 @@ namespace Jpp.Cedar.Piling
         public void UpdateElement(Document document, ElementId id)
         {
             Element foundation = document.GetElement(id);
+
             if (foundation.Location != null)
             {
-                XYZ location = CoordinateHelper.GetWorldCoordinates(document, ((LocationPoint)foundation.Location).Point);
-
-                foreach (Parameter para in foundation.Parameters)
+                if (foundation.Location is LocationPoint locationPoint)
                 {
-                    if (para.Definition.Name.Equals(_eastingDefinition.Name, StringComparison.CurrentCultureIgnoreCase))
+                    XYZ location = CoordinateHelper.GetWorldCoordinates(document, locationPoint.Point);
+
+                    foreach (Parameter para in foundation.Parameters)
                     {
-                        para.Set(location.X);
-                    }
-                    if (para.Definition.Name.Equals(_northingDefinition.Name, StringComparison.CurrentCultureIgnoreCase))
-                    {
-                        para.Set(location.Y);
-                    }
-                    if (para.Definition.Name.Equals(_cutOffDefinition.Name, StringComparison.CurrentCultureIgnoreCase))
-                    {
-                        para.Set(location.Z);
+                        if (para.Definition.Name.Equals(_eastingDefinition.Name, StringComparison.CurrentCultureIgnoreCase))
+                        {
+                            para.Set(location.X);
+                        }
+                        if (para.Definition.Name.Equals(_northingDefinition.Name, StringComparison.CurrentCultureIgnoreCase))
+                        {
+                            para.Set(location.Y);
+                        }
+                        if (para.Definition.Name.Equals(_cutOffDefinition.Name, StringComparison.CurrentCultureIgnoreCase))
+                        {
+                            para.Set(location.Z);
+                        }
                     }
                 }
+
             }
         }
     }
