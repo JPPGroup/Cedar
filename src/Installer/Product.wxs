@@ -36,9 +36,9 @@
     </ComponentGroup>
     <ComponentGroup Id="ProductComponents" Directory="INSTALLFOLDER">
       <Component Id="CedarLibraries" Guid="9D409CA7-4A63-440B-B49A-314A25B3F75B" Win64="yes" KeyPath="yes">
-        <File Id="Cedar.dll" Source="..\Cedar\bin\Release 2017\net452\Cedar.dll" Checksum="yes" ProcessorArchitecture="x64"/>
-        <File Id="CedarCore.dll" Source="..\Cedar\bin\Release 2017\net452\CedarCore.dll" Checksum="yes" ProcessorArchitecture="x64"/>
-        <File Id="Piling.dll" Source="..\Cedar\bin\Release 2017\net452\Piling.dll" Checksum="yes" ProcessorArchitecture="x64"/>
+        <File Id="Cedar.dll" Source="..\Cedar\bin\Release2017\net452\Cedar.dll" Checksum="yes" ProcessorArchitecture="x64"/>
+        <File Id="CedarCore.dll" Source="..\Cedar\bin\Release2017\net452\CedarCore.dll" Checksum="yes" ProcessorArchitecture="x64"/>
+        <File Id="Piling.dll" Source="..\Cedar\bin\Release2017\net452\Piling.dll" Checksum="yes" ProcessorArchitecture="x64"/>
       </Component>
     </ComponentGroup>
 	</Fragment>
