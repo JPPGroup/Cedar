@@ -16,7 +16,7 @@ namespace Jpp.Cedar.Core
             _application = application;
         }
 
-        public void BindParameters(Document document, Definition parameter, BuiltInParameterGroup group = BuiltInParameterGroup.INVALID)
+        public void BindParameter(Document document, ISharedParameter parameter)
         {
             if (document == null)
                 throw new System.ArgumentNullException(nameof(document));
@@ -29,7 +29,7 @@ namespace Jpp.Cedar.Core
                 // create a category set and insert category of wall to it
                 CategorySet myCategories = _application.Create.NewCategorySet();
                 // use BuiltInCategory to get category of wall
-                Category myCategory = Category.GetCategory(document, BuiltInCategory.OST_StructuralFoundation);
+                Category myCategory = Category.GetCategory(document, parameter.Category);// ;
 
                 myCategories.Insert(myCategory);
 
@@ -42,7 +42,7 @@ namespace Jpp.Cedar.Core
                 // Bind the definitions to the document
                 //bool instanceBindOK = bindingMap.Insert(parameter, instanceBinding, group);
                 //var test = RegisterParameter("Piling", "Easting", ParameterType.Length, false, "Easting");
-                bool instanceBindOK = bindingMap.Insert(parameter, instanceBinding);
+                bool instanceBindOK = bindingMap.Insert(parameter.Definition, instanceBinding);
             }
             catch (Exception e)
             {
@@ -50,9 +50,12 @@ namespace Jpp.Cedar.Core
             }
         }
 
-        public Definition RegisterParameter(string groupName, string parameterName, ParameterType parameterType, bool editable, string description, Guid id)
+        public ExternalDefinition RegisterParameter(ISharedParameter parameter)
         {
-            Definition result;
+            if (parameter == null)
+                throw new ArgumentNullException(nameof(parameter));
+
+            ExternalDefinition result;
 
             //TODO: Move to config file
             string path = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) + "\\JPP Consulting\\Cedar\\SharedParameters.txt";
@@ -70,22 +73,22 @@ namespace Jpp.Cedar.Core
             /*using (DefinitionFile defFile = _application.OpenSharedParameterFile())
             {*/
             DefinitionFile defFile = _application.OpenSharedParameterFile();
-                DefinitionGroup pilingGroup = defFile.Groups.get_Item(groupName);
+                DefinitionGroup pilingGroup = defFile.Groups.get_Item(parameter.GroupName);
                 if (pilingGroup == null)
                 {
-                    pilingGroup = defFile.Groups.Create(groupName);
+                    pilingGroup = defFile.Groups.Create(parameter.GroupName);
                 }
 
-                result = pilingGroup.Definitions.get_Item(parameterName);
+                result = pilingGroup.Definitions.get_Item(parameter.Name) as ExternalDefinition;
 
                 if (result == null)
                 {
                     ExternalDefinitionCreationOptions newDefinition =
-                        new ExternalDefinitionCreationOptions(parameterName, parameterType);
-                    newDefinition.UserModifiable = editable;
-                    newDefinition.Description = description;
-                    newDefinition.GUID = id;
-                    result = pilingGroup.Definitions.Create(newDefinition);
+                        new ExternalDefinitionCreationOptions(parameter.Name, parameter.Type);
+                    newDefinition.UserModifiable = parameter.Editable;
+                    newDefinition.Description = parameter.Description;
+                    newDefinition.GUID = parameter.Id;
+                    result = pilingGroup.Definitions.Create(newDefinition) as ExternalDefinition;
                 }
 
                 _application.SharedParametersFilename = currentPath;
