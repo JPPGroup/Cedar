@@ -1,14 +1,13 @@
 ﻿using Autodesk.Revit.DB;
 using Jpp.Cedar.Core;
 using System;
-
 namespace Jpp.Cedar.Piling
 {
     public class PilingCoordinator
     {
         private ISharedParameter _easting, _northing, _cutOff, _permanentLoad, _variableLoad, _verticalWindLoad, _horizontalWindLoad;
 
-        public PilingCoordinator(ISharedParameterManager spManager)
+        private PilingCoordinator(ISharedParameterManager spManager)
         {
             _easting = PilingParameter.Easting(spManager);
             _northing = PilingParameter.Northing(spManager);
@@ -17,8 +16,24 @@ namespace Jpp.Cedar.Piling
             _variableLoad = PilingParameter.VariableLoad(spManager);
             _verticalWindLoad = PilingParameter.VerticalWindLoad(spManager);
             _horizontalWindLoad = PilingParameter.HorizontalWindLoad(spManager);
+        }
 
-            RegisterParameters();
+        public static void Register(AddInId addInId)
+        {
+            ISharedParameterManager parameterManager = new SharedParameterManager();
+            PilingCoordinator coordinator = new PilingCoordinator(parameterManager);
+
+            PilingUpdater.Register(addInId, coordinator);
+            CoordinatePilingUpdater.Register(addInId, coordinator);
+        }
+
+        public static void Unregister(AddInId addInId)
+        {
+            ISharedParameterManager parameterManager = new SharedParameterManager();
+            PilingCoordinator coordinator = new PilingCoordinator(parameterManager);
+
+            PilingUpdater.Unregister(addInId, coordinator);
+            CoordinatePilingUpdater.Unregister(addInId, coordinator);
         }
 
         public void RegisterDocument(Document document)
@@ -61,17 +76,6 @@ namespace Jpp.Cedar.Piling
                     }
                 }
             }
-        }
-
-        private void RegisterParameters()
-        {
-            _easting.Register();
-            _northing.Register();
-            _cutOff.Register();
-            _permanentLoad.Register();
-            _variableLoad.Register();
-            _verticalWindLoad.Register();
-            _horizontalWindLoad.Register();
         }
     }
 }

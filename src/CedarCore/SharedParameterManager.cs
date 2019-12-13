@@ -8,12 +8,7 @@ namespace Jpp.Cedar.Core
 {
     public class SharedParameterManager : ISharedParameterManager
     {
-        private Application _application;
-
-        public SharedParameterManager(Application application)
-        {
-            _application = application;
-        }
+        public SharedParameterManager() { }
 
         public void BindParameter(Document document, Definition definition, BuiltInCategory category)
         {
@@ -23,17 +18,18 @@ namespace Jpp.Cedar.Core
             if (definition == null)
                 throw new ArgumentNullException(nameof(definition));
 
+            var app = document.Application;
             try
             {
                 // create a category set and insert category of wall to it
-                CategorySet myCategories = _application.Create.NewCategorySet();
+                CategorySet myCategories = app.Create.NewCategorySet();
                 // use BuiltInCategory to get category of wall
                 Category myCategory = Category.GetCategory(document, category);
 
                 myCategories.Insert(myCategory);
 
                 //Create an instance of InstanceBinding
-                InstanceBinding instanceBinding = _application.Create.NewInstanceBinding(myCategories);
+                InstanceBinding instanceBinding = app.Create.NewInstanceBinding(myCategories);
 
                 // Get the BingdingMap of current document.
                 BindingMap bindingMap = document.ParameterBindings;
@@ -49,8 +45,11 @@ namespace Jpp.Cedar.Core
             }
         }
 
-        public Definition RegisterParameter(ISharedParameter parameter)
+        public Definition RegisterParameter(Application application, ISharedParameter parameter)
         {
+            if (application == null)
+                throw new ArgumentNullException(nameof(application));
+
             if (parameter == null)
                 throw new ArgumentNullException(nameof(parameter));
 
@@ -66,12 +65,12 @@ namespace Jpp.Cedar.Core
                 fs.Close();
             }
 
-            string currentPath = _application.SharedParametersFilename;
-            _application.SharedParametersFilename = path;
+            string currentPath = application.SharedParametersFilename;
+            application.SharedParametersFilename = path;
             //Why does disposing the file throw an invalid exception?!?!?!?!?!?
             /*using (DefinitionFile defFile = _application.OpenSharedParameterFile())
             {*/
-            DefinitionFile defFile = _application.OpenSharedParameterFile();
+            DefinitionFile defFile = application.OpenSharedParameterFile();
                 DefinitionGroup pilingGroup = defFile.Groups.get_Item(parameter.GroupName);
                 if (pilingGroup == null)
                 {
@@ -89,7 +88,7 @@ namespace Jpp.Cedar.Core
                     result = pilingGroup.Definitions.Create(newDefinition);
                 }
 
-                _application.SharedParametersFilename = currentPath;
+                application.SharedParametersFilename = currentPath;
                 return result;
             //}
         }

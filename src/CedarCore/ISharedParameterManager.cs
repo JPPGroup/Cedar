@@ -1,4 +1,5 @@
 ﻿using Autodesk.Revit.DB;
+using Autodesk.Revit.ApplicationServices;
 
 namespace Jpp.Cedar.Core
 {
@@ -17,6 +18,6 @@ namespace Jpp.Cedar.Core
         /// </summary>
         /// <param name="parameter">Shared parameter to register.</param>
         /// <returns>Registered definition.</returns>
-        Definition RegisterParameter(ISharedParameter parameter);
+        Definition RegisterParameter(Application application, ISharedParameter parameter);
     }
 }
