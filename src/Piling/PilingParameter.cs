@@ -6,39 +6,39 @@ namespace Jpp.Cedar.Piling
 {
     internal class PilingParameter : ISharedParameter
     {
+        private const BuiltInCategory CATEGORY = BuiltInCategory.OST_StructuralFoundation;
+
+        private ExternalDefinition _definition;
+        private ISharedParameterManager _manager;
+
         public string GroupName => "Piling";
         public string Name { get; private set; }
         public ParameterType Type { get; private set; }
         public bool Editable { get; private set; }
         public string Description { get; private set; }
         public Guid Id { get; private set; }
-        public BuiltInCategory Category => BuiltInCategory.OST_StructuralFoundation;
-        public ExternalDefinition Definition { get; private set; }
-
-        private PilingParameter() { }
-
-        public void Register(ISharedParameterManager manager)
+        
+        private PilingParameter(ISharedParameterManager manager)
         {
-            if (manager == null)
-                throw new ArgumentNullException(nameof(manager));
-
-            Definition = manager.RegisterParameter(this);
+            _manager = manager ?? throw new ArgumentNullException(nameof(manager));
         }
 
-        public void Bind(ISharedParameterManager manager, Document document)
+        public void Register()
         {
-            if (manager == null)
-                throw new ArgumentNullException(nameof(manager));
-
-            if (Definition == null || !Definition.IsValidObject)
-                Register(manager);
-
-            manager.BindParameter(document, this);
+            _definition = (ExternalDefinition)_manager.RegisterParameter(this);
         }
 
-        public static PilingParameter Easting()
+        public void Bind(Document document)
         {
-            return new PilingParameter
+            if (_definition == null || !_definition.IsValidObject)
+                Register();
+
+            _manager.BindParameter(document, _definition, CATEGORY);
+        }
+
+        public static PilingParameter Easting(ISharedParameterManager manager)
+        {
+            return new PilingParameter(manager)
             {
                 Name = "Easting",
                 Type = ParameterType.Length,
@@ -48,9 +48,9 @@ namespace Jpp.Cedar.Piling
             };
         }
 
-        public static PilingParameter Northing()
+        public static PilingParameter Northing(ISharedParameterManager manager)
         {
-            return new PilingParameter
+            return new PilingParameter(manager)
             {
                 Name = "Northing",
                 Type = ParameterType.Length,
@@ -60,9 +60,9 @@ namespace Jpp.Cedar.Piling
             };
         }
 
-        public static PilingParameter CutOff()
+        public static PilingParameter CutOff(ISharedParameterManager manager)
         {
-            return new PilingParameter
+            return new PilingParameter(manager)
             {
                 Name = "Cut-Off",
                 Type = ParameterType.Length,
@@ -72,9 +72,9 @@ namespace Jpp.Cedar.Piling
             };
         }
 
-        public static PilingParameter PermanentLoad()
+        public static PilingParameter PermanentLoad(ISharedParameterManager manager)
         {
-            return new PilingParameter
+            return new PilingParameter(manager)
             {
                 Name = "Permanent Load",
                 Type = ParameterType.Force,
@@ -84,9 +84,9 @@ namespace Jpp.Cedar.Piling
             };
         }
 
-        public static PilingParameter VariableLoad()
+        public static PilingParameter VariableLoad(ISharedParameterManager manager)
         {
-            return new PilingParameter
+            return new PilingParameter(manager)
             {
                 Name = "Variable Load",
                 Type = ParameterType.Force,
@@ -96,9 +96,9 @@ namespace Jpp.Cedar.Piling
             };
         }
 
-        public static PilingParameter VerticalWindLoad()
+        public static PilingParameter VerticalWindLoad(ISharedParameterManager manager)
         {
-            return new PilingParameter
+            return new PilingParameter(manager)
             {
                 Name = "Vertical Wind Load",
                 Type = ParameterType.Force,
@@ -108,9 +108,9 @@ namespace Jpp.Cedar.Piling
             };
         }
 
-        public static PilingParameter HorizontalWindLoad()
+        public static PilingParameter HorizontalWindLoad(ISharedParameterManager manager)
         {
-            return new PilingParameter
+            return new PilingParameter(manager)
             {
                 Name = "Horizontal Wind Load",
                 Type = ParameterType.Force,

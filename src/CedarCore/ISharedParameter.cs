@@ -29,26 +29,16 @@ namespace Jpp.Cedar.Core
         /// Gets parameter id.
         /// </summary>
         Guid Id { get; }
-        /// <summary>
-        /// Gets parameter category.
-        /// </summary>
-        BuiltInCategory Category { get; }
-        /// <summary>
-        /// Gets parameter definition.
-        /// </summary>
-        ExternalDefinition Definition { get; }
 
         /// <summary>
         /// Registers parameter definition.
         /// </summary>
-        /// <param name="manager">Shared parameter manager.</param>
-        void Register(ISharedParameterManager manager);
+        void Register();
 
         /// <summary>
         /// Binds parameter to document.
         /// </summary>
-        /// <param name="manager">Shared parameter manager.</param>
         /// <param name="document">Active document</param>
-        void Bind(ISharedParameterManager manager, Document document);
+        void Bind( Document document);
     }
 }

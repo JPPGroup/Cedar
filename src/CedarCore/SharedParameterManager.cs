@@ -8,7 +8,6 @@ namespace Jpp.Cedar.Core
 {
     public class SharedParameterManager : ISharedParameterManager
     {
-
         private Application _application;
 
         public SharedParameterManager(Application application)
@@ -16,20 +15,20 @@ namespace Jpp.Cedar.Core
             _application = application;
         }
 
-        public void BindParameter(Document document, ISharedParameter parameter)
+        public void BindParameter(Document document, Definition definition, BuiltInCategory category)
         {
             if (document == null)
-                throw new System.ArgumentNullException(nameof(document));
+                throw new ArgumentNullException(nameof(document));
 
-            if (parameter == null)
-                throw new System.ArgumentNullException(nameof(parameter));
+            if (definition == null)
+                throw new ArgumentNullException(nameof(definition));
 
             try
             {
                 // create a category set and insert category of wall to it
                 CategorySet myCategories = _application.Create.NewCategorySet();
                 // use BuiltInCategory to get category of wall
-                Category myCategory = Category.GetCategory(document, parameter.Category);// ;
+                Category myCategory = Category.GetCategory(document, category);
 
                 myCategories.Insert(myCategory);
 
@@ -42,7 +41,7 @@ namespace Jpp.Cedar.Core
                 // Bind the definitions to the document
                 //bool instanceBindOK = bindingMap.Insert(parameter, instanceBinding, group);
                 //var test = RegisterParameter("Piling", "Easting", ParameterType.Length, false, "Easting");
-                bool instanceBindOK = bindingMap.Insert(parameter.Definition, instanceBinding);
+                bool instanceBindOK = bindingMap.Insert(definition, instanceBinding);
             }
             catch (Exception e)
             {
@@ -50,12 +49,12 @@ namespace Jpp.Cedar.Core
             }
         }
 
-        public ExternalDefinition RegisterParameter(ISharedParameter parameter)
+        public Definition RegisterParameter(ISharedParameter parameter)
         {
             if (parameter == null)
                 throw new ArgumentNullException(nameof(parameter));
 
-            ExternalDefinition result;
+            Definition result;
 
             //TODO: Move to config file
             string path = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) + "\\JPP Consulting\\Cedar\\SharedParameters.txt";
@@ -79,16 +78,15 @@ namespace Jpp.Cedar.Core
                     pilingGroup = defFile.Groups.Create(parameter.GroupName);
                 }
 
-                result = pilingGroup.Definitions.get_Item(parameter.Name) as ExternalDefinition;
+                result = pilingGroup.Definitions.get_Item(parameter.Name);
 
                 if (result == null)
                 {
-                    ExternalDefinitionCreationOptions newDefinition =
-                        new ExternalDefinitionCreationOptions(parameter.Name, parameter.Type);
+                    ExternalDefinitionCreationOptions newDefinition = new ExternalDefinitionCreationOptions(parameter.Name, parameter.Type);
                     newDefinition.UserModifiable = parameter.Editable;
                     newDefinition.Description = parameter.Description;
                     newDefinition.GUID = parameter.Id;
-                    result = pilingGroup.Definitions.Create(newDefinition) as ExternalDefinition;
+                    result = pilingGroup.Definitions.Create(newDefinition);
                 }
 
                 _application.SharedParametersFilename = currentPath;

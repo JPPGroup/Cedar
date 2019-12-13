@@ -7,32 +7,29 @@ namespace Jpp.Cedar.Piling
     public class PilingCoordinator
     {
         private ISharedParameter _easting, _northing, _cutOff, _permanentLoad, _variableLoad, _verticalWindLoad, _horizontalWindLoad;
-        private ISharedParameterManager _spManager;
 
         public PilingCoordinator(ISharedParameterManager spManager)
         {
-            _spManager = spManager ?? throw new System.ArgumentNullException(nameof(spManager));
-
-            _easting = PilingParameter.Easting();
-            _northing = PilingParameter.Northing();
-            _cutOff = PilingParameter.CutOff();
-            _permanentLoad = PilingParameter.PermanentLoad();
-            _variableLoad = PilingParameter.VariableLoad();
-            _verticalWindLoad = PilingParameter.VerticalWindLoad();
-            _horizontalWindLoad = PilingParameter.HorizontalWindLoad();
+            _easting = PilingParameter.Easting(spManager);
+            _northing = PilingParameter.Northing(spManager);
+            _cutOff = PilingParameter.CutOff(spManager);
+            _permanentLoad = PilingParameter.PermanentLoad(spManager);
+            _variableLoad = PilingParameter.VariableLoad(spManager);
+            _verticalWindLoad = PilingParameter.VerticalWindLoad(spManager);
+            _horizontalWindLoad = PilingParameter.HorizontalWindLoad(spManager);
 
             RegisterParameters();
         }
 
         public void RegisterDocument(Document document)
         {
-            _easting.Bind(_spManager, document);
-            _northing.Bind(_spManager, document);
-            _cutOff.Bind(_spManager, document);
-            _permanentLoad.Bind(_spManager, document);
-            _variableLoad.Bind(_spManager, document);
-            _verticalWindLoad.Bind(_spManager, document);
-            _horizontalWindLoad.Bind(_spManager, document);
+            _easting.Bind(document);
+            _northing.Bind(document);
+            _cutOff.Bind(document);
+            _permanentLoad.Bind(document);
+            _variableLoad.Bind(document);
+            _verticalWindLoad.Bind(document);
+            _horizontalWindLoad.Bind(document);
         }
 
         public void UpdateElement(Document document, ElementId id)
@@ -68,13 +65,13 @@ namespace Jpp.Cedar.Piling
 
         private void RegisterParameters()
         {
-            _easting.Register(_spManager);
-            _northing.Register(_spManager);
-            _cutOff.Register(_spManager);
-            _permanentLoad.Register(_spManager);
-            _variableLoad.Register(_spManager);
-            _verticalWindLoad.Register(_spManager);
-            _horizontalWindLoad.Register(_spManager);
+            _easting.Register();
+            _northing.Register();
+            _cutOff.Register();
+            _permanentLoad.Register();
+            _variableLoad.Register();
+            _verticalWindLoad.Register();
+            _horizontalWindLoad.Register();
         }
     }
 }
