@@ -11,30 +11,17 @@ namespace Jpp.Cedar.Piling
         private PilingCoordinator _pilingCoordinator;      
 
         private bool registered = false;
-        
-        public CoordinatePilingUpdater(AddInId id, PilingCoordinator coordinator)
+
+        private CoordinatePilingUpdater(AddInId id, PilingCoordinator coordinator)
         {
             if (id == null)
-                throw new System.ArgumentNullException(nameof(id));
-                        
+                throw new ArgumentNullException(nameof(id));
+
+            if (coordinator == null)
+                throw new ArgumentNullException(nameof(coordinator));
+
             _updaterId = new UpdaterId(id, new Guid("a066aabd-7ccd-43c3-9a86-b2089ebabb99"));
             _pilingCoordinator = coordinator;
-            
-        }
-
-        public static void Register(Application application, PilingCoordinator pilingCoordinator)
-        {
-            if (application == null)
-                throw new System.ArgumentNullException(nameof(application));
-
-            if (pilingCoordinator == null)
-                throw new System.ArgumentNullException(nameof(pilingCoordinator));
-
-            CoordinatePilingUpdater updater = new CoordinatePilingUpdater(application.ActiveAddInId, pilingCoordinator);
-            UpdaterRegistry.RegisterUpdater(updater);
-
-            ElementCategoryFilter basepointFilter = new ElementCategoryFilter(BuiltInCategory.OST_ProjectBasePoint);
-            UpdaterRegistry.AddTrigger(updater.GetUpdaterId(), basepointFilter, Element.GetChangeTypeAny());
         }
 
         public void Execute(UpdaterData data)
@@ -76,6 +63,21 @@ namespace Jpp.Cedar.Piling
         public string GetUpdaterName()
         {
             return "Cedar Coordinate Pile Updater";
+        }
+
+        internal static void Register(AddInId addInId, PilingCoordinator pilingCoordinator)
+        {
+            CoordinatePilingUpdater updater = new CoordinatePilingUpdater(addInId, pilingCoordinator);
+            UpdaterRegistry.RegisterUpdater(updater);
+
+            ElementCategoryFilter basepointFilter = new ElementCategoryFilter(BuiltInCategory.OST_ProjectBasePoint);
+            UpdaterRegistry.AddTrigger(updater.GetUpdaterId(), basepointFilter, Element.GetChangeTypeAny());
+        }
+
+        internal static void Unregister(AddInId addInId, PilingCoordinator coordinator)
+        {
+            CoordinatePilingUpdater updater = new CoordinatePilingUpdater(addInId, coordinator);
+            UpdaterRegistry.UnregisterUpdater(updater.GetUpdaterId());
         }
     }
 }

@@ -20,6 +20,7 @@ namespace Jpp.Cedar
             if(application == null)
                 throw new System.ArgumentNullException(nameof(application));
 
+
 #if DEBUG
             //TODO: Remove once full UI is in place. Here for debug purposes to show addin is loaded
             RibbonPanel ribbonPanel = application.CreateRibbonPanel("NewRibbonPanel");
@@ -32,26 +33,11 @@ namespace Jpp.Cedar
             pushButton.ToolTip = "Say hello to the entire world.";
             Console.WriteLine("Debug");
 #endif
-            application.ControlledApplication.ApplicationInitialized += ControlledApplication_ApplicationInitialized;
+
+            PilingCoordinator.Register(application.ActiveAddInId);
+
+
             return Result.Succeeded;
-        }
-
-        /// <summary>
-        /// Initialize components once the application has loaded
-        /// </summary>
-        /// <param name="sender">Application</param>
-        /// <param name="e">Event args</param>
-        private void ControlledApplication_ApplicationInitialized(object sender, ApplicationInitializedEventArgs e)
-        {
-            Application application = (Application) sender;
-
-            //Initialize shared components
-            ISharedParameterManager sharedParameterManager = new SharedParameterManager(application);
-            PilingCoordinator pilingCoordinator = new PilingCoordinator(sharedParameterManager);
-
-            //Register updaters
-            PilingUpdater.Register(application, pilingCoordinator);
-            CoordinatePilingUpdater.Register(application, pilingCoordinator);
         }
 
         /// <summary>
@@ -61,6 +47,10 @@ namespace Jpp.Cedar
         /// <returns>Result of add-in termination</returns>
         public Result OnShutdown(UIControlledApplication application)
         {
+            if (application == null)
+                throw new ArgumentNullException(nameof(application));
+
+            PilingCoordinator.Unregister(application.ActiveAddInId);
             return Result.Succeeded;
         }
     }

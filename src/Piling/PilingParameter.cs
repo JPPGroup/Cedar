@@ -1,4 +1,5 @@
-﻿using Autodesk.Revit.DB;
+﻿using Autodesk.Revit.ApplicationServices;
+using Autodesk.Revit.DB;
 using Jpp.Cedar.Core;
 using System;
 
@@ -23,15 +24,15 @@ namespace Jpp.Cedar.Piling
             _manager = manager ?? throw new ArgumentNullException(nameof(manager));
         }
 
-        public void Register()
+        public void Register(Application application)
         {
-            _definition = (ExternalDefinition)_manager.RegisterParameter(this);
+            _definition = (ExternalDefinition)_manager.RegisterParameter(application, this);
         }
 
         public void Bind(Document document)
         {
             if (_definition == null || !_definition.IsValidObject)
-                Register();
+                Register(document.Application);
 
             _manager.BindParameter(document, _definition, CATEGORY);
         }

@@ -1,4 +1,5 @@
-﻿using Autodesk.Revit.DB;
+﻿using Autodesk.Revit.ApplicationServices;
+using Autodesk.Revit.DB;
 using System;
 
 namespace Jpp.Cedar.Core
@@ -33,7 +34,8 @@ namespace Jpp.Cedar.Core
         /// <summary>
         /// Registers parameter definition.
         /// </summary>
-        void Register();
+        // <param name="application">Current appliction</param>
+        void Register(Application application);
 
         /// <summary>
         /// Binds parameter to document.

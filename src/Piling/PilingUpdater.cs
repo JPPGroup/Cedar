@@ -1,7 +1,6 @@
 ﻿using Autodesk.Revit.DB;
 using System;
 using System.Collections.Generic;
-using Autodesk.Revit.ApplicationServices;
 
 namespace Jpp.Cedar.Piling
 {
@@ -12,36 +11,22 @@ namespace Jpp.Cedar.Piling
 
         private bool registered = false;
         
-        public PilingUpdater(AddInId id, PilingCoordinator coordinator)
+        private PilingUpdater(AddInId id, PilingCoordinator coordinator)
         {
             if (id == null)
-                throw new System.ArgumentNullException(nameof(id));
-                        
+                throw new ArgumentNullException(nameof(id));
+
+            if (coordinator == null)
+                throw new ArgumentNullException(nameof(coordinator));
+
             _updaterId = new UpdaterId(id, new Guid("ddb23f37-892e-4b43-9e8a-0ad8ff381b2b"));
             _pilingCoordinator = coordinator;
-            
-        }
-
-        public static void Register(Application application, PilingCoordinator pilingCoordinator)
-        {
-            if (application == null)
-                throw new System.ArgumentNullException(nameof(application));
-
-            if (pilingCoordinator == null)
-                throw new System.ArgumentNullException(nameof(pilingCoordinator));
-
-            PilingUpdater updater = new PilingUpdater(application.ActiveAddInId, pilingCoordinator);
-            UpdaterRegistry.RegisterUpdater(updater);
-            
-            ElementCategoryFilter filter = new ElementCategoryFilter(BuiltInCategory.OST_StructuralFoundation);
-            UpdaterRegistry.AddTrigger(updater.GetUpdaterId(), filter, Element.GetChangeTypeGeometry());
-            UpdaterRegistry.AddTrigger(updater.GetUpdaterId(), filter, Element.GetChangeTypeElementAddition());
         }
 
         public void Execute(UpdaterData data)
         {
             if (data == null)
-                throw new System.ArgumentNullException(nameof(data));
+                throw new ArgumentNullException(nameof(data));
 
             Document document = data.GetDocument();
 
@@ -79,6 +64,22 @@ namespace Jpp.Cedar.Piling
         public string GetUpdaterName()
         {
             return "Cedar Pile Updater";
+        }
+
+        internal static void Register(AddInId addInId, PilingCoordinator coordinator)
+        {
+            PilingUpdater updater = new PilingUpdater(addInId, coordinator);
+            UpdaterRegistry.RegisterUpdater(updater);
+
+            ElementCategoryFilter filter = new ElementCategoryFilter(BuiltInCategory.OST_StructuralFoundation);
+            UpdaterRegistry.AddTrigger(updater.GetUpdaterId(), filter, Element.GetChangeTypeGeometry());
+            UpdaterRegistry.AddTrigger(updater.GetUpdaterId(), filter, Element.GetChangeTypeElementAddition());
+        }
+
+        internal static void Unregister(AddInId addInId, PilingCoordinator coordinator)
+        {
+            PilingUpdater updater = new PilingUpdater(addInId, coordinator);
+            UpdaterRegistry.UnregisterUpdater(updater.GetUpdaterId());
         }
     }
 }
