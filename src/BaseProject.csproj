@@ -1,0 +1,48 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <Platforms>x64</Platforms>
+    <Configurations>Debug2017;Release2017;Debug2020;Release2020</Configurations>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="$(Configuration.Contains('Debug'))">
+    <DebugType>full</DebugType>
+    <DebugSymbols>true</DebugSymbols>
+    <PlatformTarget>x64</PlatformTarget>
+    <DefineConstants>DEBUG</DefineConstants>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="$(Configuration.Contains('Release'))">
+    <DebugType>full</DebugType>
+    <DebugSymbols>true</DebugSymbols>
+    <PlatformTarget>x64</PlatformTarget>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="$(Configuration.Contains('2017'))">
+    <RevitVersion>2017</RevitVersion>
+    <TargetFramework>net452</TargetFramework>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="$(Configuration.Contains('2020'))">
+    <RevitVersion>2020</RevitVersion>
+    <TargetFramework>net47</TargetFramework>
+  </PropertyGroup>
+
+  <PropertyGroup>
+  <!-- Define handy symbols to use in the code in order to accommodate different Revit versions,
+    e.g. by wrapping legacy / deprecated API calls with #if REVIT2014 | REVIT2015 -->
+    <DefineConstants Condition="$(Configuration.Contains('Debug'))">TRACE;DEBUG;REVIT$(RevitVersion)</DefineConstants>
+  <DefineConstants Condition="$(Configuration.Contains('Release'))">REVIT$(RevitVersion)</DefineConstants>
+    <PreprocessorDefinitions>$(DefineConstants)</PreprocessorDefinitions>
+  </PropertyGroup>
+
+
+  <ItemGroup>
+    <PackageReference Include="Jpp.Cedar.BaseApi.2017" Version="0.0.1" Condition="'$(RevitVersion)'=='2017'" />
+	<PackageReference Include="Jpp.Common.Tooling.Signing" Version="0.3.0" />
+    <PackageReference Include="Microsoft.CodeAnalysis.FxCopAnalyzers" Version="2.9.7">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
+  </ItemGroup>
+</Project>

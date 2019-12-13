@@ -2,52 +2,40 @@
 using System;
 using System.Collections.Generic;
 using Autodesk.Revit.ApplicationServices;
-using Jpp.Cedar.Core;
 
 namespace Jpp.Cedar.Piling
 {
     public class PilingUpdater : IUpdater
     {
-        UpdaterId _updaterId;
+        private UpdaterId _updaterId;
+        private PilingCoordinator _pilingCoordinator;      
 
-        ISharedParameterManager _spManager;
-
-        bool registered = false;
-        Definition _eastingDefinition, _northingDefinition, _cutOffDefinition;
-
-        public PilingUpdater(AddInId id, ISharedParameterManager spManager)
+        private bool registered = false;
+        
+        public PilingUpdater(AddInId id, PilingCoordinator coordinator)
         {
             if (id == null)
                 throw new System.ArgumentNullException(nameof(id));
-
-            _spManager = spManager ?? throw new System.ArgumentNullException(nameof(spManager));
+                        
             _updaterId = new UpdaterId(id, new Guid("ddb23f37-892e-4b43-9e8a-0ad8ff381b2b"));
-
-            _eastingDefinition = _spManager.RegisterParameter("Piling", "Easting", ParameterType.Length, false, "Easting");
-            _northingDefinition = _spManager.RegisterParameter("Piling", "Northing", ParameterType.Length, false, "Northing");
-            _cutOffDefinition = _spManager.RegisterParameter("Piling", "Cut-Off", ParameterType.Length, false, "Cut Off Level");
+            _pilingCoordinator = coordinator;
+            
         }
 
-        public static void Register(Application application, ISharedParameterManager sharedParameterManager)
+        public static void Register(Application application, PilingCoordinator pilingCoordinator)
         {
             if (application == null)
                 throw new System.ArgumentNullException(nameof(application));
 
-            if (sharedParameterManager == null)
-                throw new System.ArgumentNullException(nameof(sharedParameterManager));
+            if (pilingCoordinator == null)
+                throw new System.ArgumentNullException(nameof(pilingCoordinator));
 
-            PilingUpdater updater = new PilingUpdater(application.ActiveAddInId, sharedParameterManager);
+            PilingUpdater updater = new PilingUpdater(application.ActiveAddInId, pilingCoordinator);
             UpdaterRegistry.RegisterUpdater(updater);
             
             ElementCategoryFilter filter = new ElementCategoryFilter(BuiltInCategory.OST_StructuralFoundation);
-            UpdaterRegistry.AddTrigger(updater.GetUpdaterId(), filter, Element.GetChangeTypeGeometry());            
-        }
-
-        public void RegisterDocument(Document document)
-        {
-            _spManager.BindParameters(document, _eastingDefinition);
-            _spManager.BindParameters(document, _northingDefinition);
-            _spManager.BindParameters(document, _cutOffDefinition);
+            UpdaterRegistry.AddTrigger(updater.GetUpdaterId(), filter, Element.GetChangeTypeGeometry());
+            UpdaterRegistry.AddTrigger(updater.GetUpdaterId(), filter, Element.GetChangeTypeElementAddition());
         }
 
         public void Execute(UpdaterData data)
@@ -55,11 +43,13 @@ namespace Jpp.Cedar.Piling
             if (data == null)
                 throw new System.ArgumentNullException(nameof(data));
 
-
             Document document = data.GetDocument();
 
             if (!registered)
-                RegisterDocument(document);
+            {
+                registered = true;
+                _pilingCoordinator.RegisterDocument(document);
+            }
 
             List<ElementId> modifiedElementIds = new List<ElementId>();
             modifiedElementIds.AddRange(data.GetAddedElementIds());
@@ -67,27 +57,7 @@ namespace Jpp.Cedar.Piling
 
             foreach (ElementId id in modifiedElementIds)
             {
-                Element foundation = document.GetElement(id);
-                if (foundation.Location != null)
-                {
-                    XYZ location = CoordinateHelper.GetWorldCoordinates(document, ((LocationPoint)foundation.Location).Point);
-                   
-                    foreach (Parameter para in foundation.Parameters)
-                    {
-                        if (para.Definition.Name.Equals(_eastingDefinition.Name, StringComparison.CurrentCultureIgnoreCase))
-                        {
-                            para.Set(location.X);
-                        }
-                        if (para.Definition.Name.Equals(_northingDefinition.Name, StringComparison.CurrentCultureIgnoreCase))
-                        {
-                            para.Set(location.Y);
-                        }
-                        if (para.Definition.Name.Equals(_cutOffDefinition.Name, StringComparison.CurrentCultureIgnoreCase))
-                        {
-                            para.Set(location.Z);
-                        }
-                    }
-                }
+                _pilingCoordinator.UpdateElement(document, id);
             }
         }
 

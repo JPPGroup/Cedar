@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Wix xmlns="http://schemas.microsoft.com/wix/2006/wi">
+	<Product Id="*" Name="Cedar" Language="1033" Version="0.0.0.1" Manufacturer="JPP Consulting" UpgradeCode="084A3D0F-46F1-40DA-AC74-1BEE56ACE705">
+		<Package InstallerVersion="200" Compressed="yes" InstallScope="perMachine" Platform="x64" />
+
+		<MajorUpgrade DowngradeErrorMessage="A newer version of [ProductName] is already installed." />
+		<MediaTemplate EmbedCab="yes"/>
+
+		<Feature Id="ProductFeature" Title="Installer" Level="1">
+      <ComponentGroupRef Id="ProductAddin" />
+      <ComponentGroupRef Id="ProductComponents" />
+    </Feature>
+	</Product>
+
+  <Fragment>
+    <Directory Id="TARGETDIR" Name="SourceDir">
+      <Directory Id="CommonAppDataFolder">
+        <Directory Id="Autodesk" Name="Autodesk">
+          <Directory Id="Revit" Name="Revit">
+            <Directory Id="Addins" Name="Addins">
+              <Directory Id="REVITADDINSFOLDER" Name="2017">
+                <Directory Id="INSTALLFOLDER" Name="Cedar" />
+              </Directory>
+            </Directory>
+          </Directory>
+        </Directory>
+        </Directory>
+    </Directory>
+  </Fragment>
+
+	<Fragment>
+    <ComponentGroup Id="ProductAddin" Directory="REVITADDINSFOLDER">
+      <Component Id="CedarAddin" Guid="3EC7F582-1E97-41AE-BA29-8E3300C6D424" Win64="yes" KeyPath="yes">
+        <File Id="Cedar.addin" Source="..\Cedar\Cedar.addin" Checksum="yes"/>
+      </Component>
+    </ComponentGroup>
+    <ComponentGroup Id="ProductComponents" Directory="INSTALLFOLDER">
+      <Component Id="CedarLibraries" Guid="9D409CA7-4A63-440B-B49A-314A25B3F75B" Win64="yes" KeyPath="yes">
+        <File Id="Cedar.dll" Source="..\Cedar\bin\Release2017\net452\Cedar.dll" Checksum="yes" ProcessorArchitecture="x64"/>
+        <File Id="CedarCore.dll" Source="..\Cedar\bin\Release2017\net452\CedarCore.dll" Checksum="yes" ProcessorArchitecture="x64"/>
+        <File Id="Piling.dll" Source="..\Cedar\bin\Release2017\net452\Piling.dll" Checksum="yes" ProcessorArchitecture="x64"/>
+      </Component>
+    </ComponentGroup>
+	</Fragment>
+</Wix>
