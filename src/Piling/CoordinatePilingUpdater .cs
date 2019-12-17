@@ -1,7 +1,5 @@
 ﻿using Autodesk.Revit.DB;
 using System;
-using System.Collections.Generic;
-using Autodesk.Revit.ApplicationServices;
 
 namespace Jpp.Cedar.Piling
 {

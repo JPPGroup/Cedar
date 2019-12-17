@@ -6,8 +6,8 @@ namespace Jpp.Cedar.Piling
 {
     public class PilingCoordinator
     {
-        private readonly FailureDefinitionId _warnNoLocationId;
-        private readonly FailureDefinition _warnNoLocationDef;
+        private readonly FailureDefinitionId _warnIsFamilyDocumentId;
+        private readonly FailureDefinition _warnIsFamilyDocumentDef;
         private ISharedParameter _easting, _northing, _cutOff, _permanentLoad, _variableLoad, _verticalWindLoad, _horizontalWindLoad;
 
         private PilingCoordinator(ISharedParameterManager spManager)
@@ -20,8 +20,8 @@ namespace Jpp.Cedar.Piling
             _verticalWindLoad = PilingParameter.VerticalWindLoad(spManager);
             _horizontalWindLoad = PilingParameter.HorizontalWindLoad(spManager);
 
-            _warnNoLocationId = new FailureDefinitionId(new Guid("2c644284-59fe-4f5c-b8b3-e89977af7d15"));
-            _warnNoLocationDef = FailureDefinition.CreateFailureDefinition(_warnNoLocationId, FailureSeverity.Warning, "Unable to determine location.");
+            _warnIsFamilyDocumentId = new FailureDefinitionId(new Guid("2c644284-59fe-4f5c-b8b3-e89977af7d15"));
+            _warnIsFamilyDocumentDef = FailureDefinition.CreateFailureDefinition(_warnIsFamilyDocumentId, FailureSeverity.Warning, "Piling coordinates not maintained in family document.");
         }
 
         public static void Register(AddInId addInId)
@@ -55,19 +55,23 @@ namespace Jpp.Cedar.Piling
 
         public void UpdateElement(Document document, ElementId id)
         {
-            Element foundation = document.GetElement(id);
+            if (document == null)
+                throw new ArgumentNullException(nameof(document));
 
-            if (foundation.Location != null)
+            if (document.IsFamilyDocument)
             {
-                if (foundation.Location is LocationPoint locationPoint)
+                PostWarningIsFamilyDocument(document, id);
+            }
+            else
+            {
+                Element foundation = document.GetElement(id);
+
+                if (foundation.Location != null)
                 {
-                    XYZ location = CoordinateHelper.GetWorldCoordinates(document, locationPoint.Point);
-                    if (location == null)
+                    if (foundation.Location is LocationPoint locationPoint)
                     {
-                        PostNoLocationMessage(document, id);
-                    }
-                    else
-                    {
+                        XYZ location = CoordinateHelper.GetWorldCoordinates(document, locationPoint.Point);
+
                         UpdateParameters(foundation, location);
                     }
                 }
@@ -84,9 +88,9 @@ namespace Jpp.Cedar.Piling
             }
         }
 
-        private void PostNoLocationMessage(Document document, ElementId id)
+        private void PostWarningIsFamilyDocument(Document document, ElementId id)
         {
-            using (FailureMessage message = new FailureMessage(_warnNoLocationId))
+            using (FailureMessage message = new FailureMessage(_warnIsFamilyDocumentId))
             {
                 message.SetFailingElement(id);
                 document.PostFailure(message);
