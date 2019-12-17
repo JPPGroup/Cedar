@@ -42,5 +42,12 @@ namespace Jpp.Cedar.Core
         /// </summary>
         /// <param name="document">Active document</param>
         void Bind( Document document);
+
+        /// <summary>
+        /// Sets the parameter value
+        /// </summary>
+        /// <param name="parameter">Parameter to set</param>
+        /// <param name="value">Value</param>
+        void SetParameterValue(Parameter parameter, double value);
     }
 }

@@ -64,32 +64,32 @@ namespace Jpp.Cedar.Piling
                     XYZ location = CoordinateHelper.GetWorldCoordinates(document, locationPoint.Point);
                     if (location == null)
                     {
-                        using (FailureMessage message = new FailureMessage(_warnNoLocationId))
-                        {
-                            message.SetFailingElement(id);
-                            document.PostFailure(message);
-                            return;
-                        };
-                    };
-
-                    foreach (Parameter para in foundation.Parameters)
+                        PostNoLocationMessage(document, id);
+                    }
+                    else
                     {
-                        if (para.Definition.Name.Equals(_easting.Name, StringComparison.CurrentCultureIgnoreCase))
-                        {
-                            para.Set(location.X);
-                        }
-
-                        if (para.Definition.Name.Equals(_northing.Name, StringComparison.CurrentCultureIgnoreCase))
-                        {
-                            para.Set(location.Y);
-                        }
-
-                        if (para.Definition.Name.Equals(_cutOff.Name, StringComparison.CurrentCultureIgnoreCase))
-                        {
-                            para.Set(location.Z);
-                        }
+                        UpdateParameters(foundation, location);
                     }
                 }
+            }
+        }
+
+        private void UpdateParameters(Element foundation, XYZ location)
+        {
+            foreach (Parameter para in foundation.Parameters)
+            {
+                _easting.SetParameterValue(para, location.X);
+                _northing.SetParameterValue(para, location.Y);
+                _cutOff.SetParameterValue(para, location.Z);
+            }
+        }
+
+        private void PostNoLocationMessage(Document document, ElementId id)
+        {
+            using (FailureMessage message = new FailureMessage(_warnNoLocationId))
+            {
+                message.SetFailingElement(id);
+                document.PostFailure(message);
             }
         }
     }

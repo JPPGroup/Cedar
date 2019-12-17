@@ -24,6 +24,14 @@ namespace Jpp.Cedar.Piling
             _manager = manager ?? throw new ArgumentNullException(nameof(manager));
         }
 
+        public void SetParameterValue(Parameter parameter, double value)
+        {
+            if (parameter.Definition.Name.Equals(Name, StringComparison.CurrentCultureIgnoreCase))
+            {
+                parameter.Set(value);
+            }
+        }
+
         public void Register(Application application)
         {
             _definition = (ExternalDefinition)_manager.RegisterParameter(application, this);
