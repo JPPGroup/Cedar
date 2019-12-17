@@ -24,7 +24,10 @@ namespace Jpp.Cedar.Core
                 //XYZ loc = (basePoint.Location as LocationPoint).Point;
             }*/
 
-            ProjectPosition projectPosition = document.ActiveProjectLocation.get_ProjectPosition(XYZ.Zero);
+            ProjectLocation projectLocation = document.ActiveProjectLocation;
+            if (projectLocation == null) return null;
+
+            ProjectPosition projectPosition = projectLocation.get_ProjectPosition(XYZ.Zero);
             // Create a translation vector for the offsets
             XYZ translationVector = new XYZ(projectPosition.EastWest, projectPosition.NorthSouth, projectPosition.Elevation);
             Transform translationTransform = Transform.CreateTranslation(translationVector);            

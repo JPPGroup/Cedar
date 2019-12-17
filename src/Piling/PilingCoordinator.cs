@@ -1,10 +1,13 @@
 ﻿using Autodesk.Revit.DB;
 using Jpp.Cedar.Core;
 using System;
+
 namespace Jpp.Cedar.Piling
 {
     public class PilingCoordinator
     {
+        private readonly FailureDefinitionId _warnNoLocationId;
+        private readonly FailureDefinition _warnNoLocationDef;
         private ISharedParameter _easting, _northing, _cutOff, _permanentLoad, _variableLoad, _verticalWindLoad, _horizontalWindLoad;
 
         private PilingCoordinator(ISharedParameterManager spManager)
@@ -16,6 +19,9 @@ namespace Jpp.Cedar.Piling
             _variableLoad = PilingParameter.VariableLoad(spManager);
             _verticalWindLoad = PilingParameter.VerticalWindLoad(spManager);
             _horizontalWindLoad = PilingParameter.HorizontalWindLoad(spManager);
+
+            _warnNoLocationId = new FailureDefinitionId(new Guid("2c644284-59fe-4f5c-b8b3-e89977af7d15"));
+            _warnNoLocationDef = FailureDefinition.CreateFailureDefinition(_warnNoLocationId, FailureSeverity.Warning, "Unable to determine location.");
         }
 
         public static void Register(AddInId addInId)
@@ -56,6 +62,15 @@ namespace Jpp.Cedar.Piling
                 if (foundation.Location is LocationPoint locationPoint)
                 {
                     XYZ location = CoordinateHelper.GetWorldCoordinates(document, locationPoint.Point);
+                    if (location == null)
+                    {
+                        using (FailureMessage message = new FailureMessage(_warnNoLocationId))
+                        {
+                            message.SetFailingElement(id);
+                            document.PostFailure(message);
+                            return;
+                        };
+                    };
 
                     foreach (Parameter para in foundation.Parameters)
                     {
