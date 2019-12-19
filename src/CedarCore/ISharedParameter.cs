@@ -44,11 +44,11 @@ namespace Jpp.Cedar.Core
         void Bind(Document document);
 
         /// <summary>
-        /// Sets the parameter value
+        /// Try to set the parameter value.
         /// </summary>
-        /// <param name="parameter">Parameter to set</param>
-        /// <param name="value">Value</param>
+        /// <param name="parameter">Parameter to set.</param>
+        /// <param name="value">Value.</param>
         /// <returns>Boolean to indicate if parameter was set.</returns>
-        bool SetParameterValue(Parameter parameter, double value);
+        bool TrySetParameterValue(Parameter parameter, double value);
     }
 }

@@ -31,7 +31,7 @@ namespace Jpp.Cedar.Piling
         }
 
         /// <inheritdoc/> 
-        public bool SetParameterValue(Parameter parameter, double value)
+        public bool TrySetParameterValue(Parameter parameter, double value)
         {
             if (parameter.Definition.Name.Equals(Name, StringComparison.CurrentCultureIgnoreCase))
             {

@@ -82,10 +82,10 @@ namespace Jpp.Cedar.Piling
         private void UpdateParameters(Element foundation, XYZ location)
         {
             foreach (Parameter para in foundation.Parameters)
-            {
-                _easting.SetParameterValue(para, location.X);
-                _northing.SetParameterValue(para, location.Y);
-                _cutOff.SetParameterValue(para, location.Z);
+            {           
+                _easting.TrySetParameterValue(para, location.X);
+                _northing.TrySetParameterValue(para, location.Y);
+                _cutOff.TrySetParameterValue(para, location.Z);
             }
         }
 
