@@ -7,33 +7,21 @@ namespace Jpp.Cedar.Piling
     {
         private UpdaterId _updaterId;
         private PilingCoordinator _pilingCoordinator;      
-
-        private bool registered = false;
-
+        
         private CoordinatePilingUpdater(AddInId id, PilingCoordinator coordinator)
         {
-            if (id == null)
-                throw new ArgumentNullException(nameof(id));
-
-            if (coordinator == null)
-                throw new ArgumentNullException(nameof(coordinator));
-
             _updaterId = new UpdaterId(id, new Guid("a066aabd-7ccd-43c3-9a86-b2089ebabb99"));
-            _pilingCoordinator = coordinator;
+            _pilingCoordinator = coordinator ?? throw new ArgumentNullException(nameof(coordinator));
         }
 
         public void Execute(UpdaterData data)
         {
             if (data == null)
-                throw new System.ArgumentNullException(nameof(data));
+                throw new ArgumentNullException(nameof(data));
 
             Document document = data.GetDocument();
 
-            if (!registered)
-            {
-                registered = true;
-                _pilingCoordinator.RegisterDocument(document);
-            }
+            _pilingCoordinator.RegisterDocument(document);
 
             FilteredElementCollector foundationCollection = new FilteredElementCollector(document).OfCategory(BuiltInCategory.OST_StructuralFoundation);
 

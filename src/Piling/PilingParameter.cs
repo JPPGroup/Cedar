@@ -50,10 +50,11 @@ namespace Jpp.Cedar.Piling
         /// <inheritdoc/> 
         public void Bind(Document document)
         {
-            if (_definition == null || !_definition.IsValidObject)
+            if (_definition == null || !_definition.IsValidObject) 
                 Register(document.Application);
 
-            _manager.BindParameter(document, _definition, CATEGORY);
+            if (!document.ParameterBindings.Contains(_definition))
+                _manager.BindParameter(document, _definition, CATEGORY);
         }
 
         public static PilingParameter Easting(ISharedParameterManager manager)
