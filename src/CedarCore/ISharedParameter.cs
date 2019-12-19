@@ -34,20 +34,21 @@ namespace Jpp.Cedar.Core
         /// <summary>
         /// Registers parameter definition.
         /// </summary>
-        // <param name="application">Current appliction</param>
+        /// <param name="application">Current application</param>
         void Register(Application application);
 
         /// <summary>
         /// Binds parameter to document.
         /// </summary>
         /// <param name="document">Active document</param>
-        void Bind( Document document);
+        void Bind(Document document);
 
         /// <summary>
         /// Sets the parameter value
         /// </summary>
         /// <param name="parameter">Parameter to set</param>
         /// <param name="value">Value</param>
-        void SetParameterValue(Parameter parameter, double value);
+        /// <returns>Boolean to indicate if parameter was set.</returns>
+        bool SetParameterValue(Parameter parameter, double value);
     }
 }

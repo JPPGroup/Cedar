@@ -1,5 +1,6 @@
 ﻿using Autodesk.Revit.DB;
 using Jpp.Cedar.Core;
+using Jpp.Cedar.Piling.Properties;
 using System;
 
 namespace Jpp.Cedar.Piling
@@ -21,7 +22,7 @@ namespace Jpp.Cedar.Piling
             _horizontalWindLoad = PilingParameter.HorizontalWindLoad(spManager);
 
             _warnIsFamilyDocumentId = new FailureDefinitionId(new Guid("2c644284-59fe-4f5c-b8b3-e89977af7d15"));
-            _warnIsFamilyDocumentDef = FailureDefinition.CreateFailureDefinition(_warnIsFamilyDocumentId, FailureSeverity.Warning, "Piling coordinates not maintained in family document.");
+            _warnIsFamilyDocumentDef = FailureDefinition.CreateFailureDefinition(_warnIsFamilyDocumentId, FailureSeverity.Warning, Resources.FailureDefinition_WarnIsFamilyMessage);
         }
 
         public static void Register(AddInId addInId)
