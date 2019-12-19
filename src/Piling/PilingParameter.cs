@@ -12,11 +12,17 @@ namespace Jpp.Cedar.Piling
         private ExternalDefinition _definition;
         private ISharedParameterManager _manager;
 
+        /// <inheritdoc/> 
         public string GroupName => "Piling";
+        /// <inheritdoc/> 
         public string Name { get; private set; }
+        /// <inheritdoc/> 
         public ParameterType Type { get; private set; }
+        /// <inheritdoc/> 
         public bool Editable { get; private set; }
+        /// <inheritdoc/> 
         public string Description { get; private set; }
+        /// <inheritdoc/> 
         public Guid Id { get; private set; }
         
         private PilingParameter(ISharedParameterManager manager)
@@ -24,11 +30,24 @@ namespace Jpp.Cedar.Piling
             _manager = manager ?? throw new ArgumentNullException(nameof(manager));
         }
 
+        /// <inheritdoc/> 
+        public bool TrySetParameterValue(Parameter parameter, double value)
+        {
+            if (parameter.Definition.Name.Equals(Name, StringComparison.CurrentCultureIgnoreCase))
+            {
+                return parameter.Set(value);
+            }
+
+            return false;
+        }
+
+        /// <inheritdoc/> 
         public void Register(Application application)
         {
             _definition = (ExternalDefinition)_manager.RegisterParameter(application, this);
         }
 
+        /// <inheritdoc/> 
         public void Bind(Document document)
         {
             if (_definition == null || !_definition.IsValidObject)

@@ -1,10 +1,14 @@
 ﻿using Autodesk.Revit.DB;
 using Jpp.Cedar.Core;
+using Jpp.Cedar.Piling.Properties;
 using System;
+
 namespace Jpp.Cedar.Piling
 {
     public class PilingCoordinator
     {
+        private readonly FailureDefinitionId _warnIsFamilyDocumentId;
+        private readonly FailureDefinition _warnIsFamilyDocumentDef;
         private ISharedParameter _easting, _northing, _cutOff, _permanentLoad, _variableLoad, _verticalWindLoad, _horizontalWindLoad;
 
         private PilingCoordinator(ISharedParameterManager spManager)
@@ -16,6 +20,9 @@ namespace Jpp.Cedar.Piling
             _variableLoad = PilingParameter.VariableLoad(spManager);
             _verticalWindLoad = PilingParameter.VerticalWindLoad(spManager);
             _horizontalWindLoad = PilingParameter.HorizontalWindLoad(spManager);
+
+            _warnIsFamilyDocumentId = new FailureDefinitionId(new Guid("2c644284-59fe-4f5c-b8b3-e89977af7d15"));
+            _warnIsFamilyDocumentDef = FailureDefinition.CreateFailureDefinition(_warnIsFamilyDocumentId, FailureSeverity.Warning, Resources.FailureDefinition_WarnIsFamilyMessage);
         }
 
         public static void Register(AddInId addInId)
@@ -49,32 +56,45 @@ namespace Jpp.Cedar.Piling
 
         public void UpdateElement(Document document, ElementId id)
         {
-            Element foundation = document.GetElement(id);
+            if (document == null)
+                throw new ArgumentNullException(nameof(document));
 
-            if (foundation.Location != null)
+            if (document.IsFamilyDocument)
             {
-                if (foundation.Location is LocationPoint locationPoint)
+                PostWarningIsFamilyDocument(document, id);
+            }
+            else
+            {
+                Element foundation = document.GetElement(id);
+
+                if (foundation.Location != null)
                 {
-                    XYZ location = CoordinateHelper.GetWorldCoordinates(document, locationPoint.Point);
-
-                    foreach (Parameter para in foundation.Parameters)
+                    if (foundation.Location is LocationPoint locationPoint)
                     {
-                        if (para.Definition.Name.Equals(_easting.Name, StringComparison.CurrentCultureIgnoreCase))
-                        {
-                            para.Set(location.X);
-                        }
+                        XYZ location = CoordinateHelper.GetWorldCoordinates(document, locationPoint.Point);
 
-                        if (para.Definition.Name.Equals(_northing.Name, StringComparison.CurrentCultureIgnoreCase))
-                        {
-                            para.Set(location.Y);
-                        }
-
-                        if (para.Definition.Name.Equals(_cutOff.Name, StringComparison.CurrentCultureIgnoreCase))
-                        {
-                            para.Set(location.Z);
-                        }
+                        UpdateParameters(foundation, location);
                     }
                 }
+            }
+        }
+
+        private void UpdateParameters(Element foundation, XYZ location)
+        {
+            foreach (Parameter para in foundation.Parameters)
+            {           
+                _easting.TrySetParameterValue(para, location.X);
+                _northing.TrySetParameterValue(para, location.Y);
+                _cutOff.TrySetParameterValue(para, location.Z);
+            }
+        }
+
+        private void PostWarningIsFamilyDocument(Document document, ElementId id)
+        {
+            using (FailureMessage message = new FailureMessage(_warnIsFamilyDocumentId))
+            {
+                message.SetFailingElement(id);
+                document.PostFailure(message);
             }
         }
     }
