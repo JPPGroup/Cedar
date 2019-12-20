@@ -9,6 +9,9 @@
   "settings": {
     "documentationRules": {
       "companyName": "JPP Consulting"
+    },
+    "orderingRules": {
+      "usingDirectivesPlacement": "outsideNamespace"
     }
   }
 }
