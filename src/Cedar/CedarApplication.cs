@@ -10,6 +10,8 @@ namespace Jpp.Cedar
 {
     public class CedarApplication : IExternalApplication
     {
+
+
         /// <summary>
         /// Entry point for application
         /// </summary>
@@ -34,8 +36,8 @@ namespace Jpp.Cedar
             Console.WriteLine("Debug");
 #endif
 
-            PilingCoordinator.Register(application.ActiveAddInId);
-
+            SharedParameterManager manager = new SharedParameterManager();
+            PilingCoordinator coordinator = new PilingCoordinator(application.ActiveAddInId, manager);
 
             return Result.Succeeded;
         }
@@ -50,7 +52,8 @@ namespace Jpp.Cedar
             if (application == null)
                 throw new ArgumentNullException(nameof(application));
 
-            PilingCoordinator.Unregister(application.ActiveAddInId);
+            //TODO: Unregister coordinator
+            //PilingCoordinator.Unregister(application.ActiveAddInId);
             return Result.Succeeded;
         }
     }

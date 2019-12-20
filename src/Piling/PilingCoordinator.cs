@@ -1,68 +1,92 @@
-﻿using Autodesk.Revit.DB;
+﻿// <copyright file="PilingCoordinator.cs" company="JPP Consulting">
+// Copyright (c) JPP Consulting. All rights reserved.
+// </copyright>
+
+using System;
+using Autodesk.Revit.DB;
 using Jpp.Cedar.Core;
 using Jpp.Cedar.Piling.Properties;
-using System;
 
 namespace Jpp.Cedar.Piling
 {
+    /// <summary>
+    /// Summary goes here.
+    /// </summary>
     public class PilingCoordinator
     {
-        private readonly FailureDefinitionId _warnIsFamilyDocumentId;
-        private readonly FailureDefinition _warnIsFamilyDocumentDef;
-        private ISharedParameter _easting, _northing, _cutOff, _permanentLoad, _variableLoad, _verticalWindLoad, _horizontalWindLoad;
+        private readonly FailureDefinitionId warnIsFamilyDocumentId;
+        private readonly FailureDefinition warnIsFamilyDocumentDef;
+        private readonly PilingUpdater pilingUpdater;
+        private readonly CoordinatePilingUpdater coordinatePilingUpdater;
+        private readonly ISharedParameter easting;
+        private readonly ISharedParameter northing;
+        private readonly ISharedParameter cutOff;
+        private readonly ISharedParameter permanentLoad;
+        private readonly ISharedParameter variableLoad;
+        private readonly ISharedParameter verticalWindLoad;
+        private readonly ISharedParameter horizontalWindLoad;
 
-        private PilingCoordinator(ISharedParameterManager spManager)
+        /// <summary>
+        /// Initializes a new instance of the <see cref="PilingCoordinator"/> class.
+        /// </summary>
+        /// <param name="addInId">Add-In Id param.</param>
+        /// <param name="spManager">Shared Parameter Manager param.</param>
+        public PilingCoordinator(AddInId addInId, ISharedParameterManager spManager)
         {
-            _easting = PilingParameter.Easting(spManager);
-            _northing = PilingParameter.Northing(spManager);
-            _cutOff = PilingParameter.CutOff(spManager);
-            _permanentLoad = PilingParameter.PermanentLoad(spManager);
-            _variableLoad = PilingParameter.VariableLoad(spManager);
-            _verticalWindLoad = PilingParameter.VerticalWindLoad(spManager);
-            _horizontalWindLoad = PilingParameter.HorizontalWindLoad(spManager);
+            this.easting = PilingParameter.Easting(spManager);
+            this.northing = PilingParameter.Northing(spManager);
+            this.cutOff = PilingParameter.CutOff(spManager);
+            this.permanentLoad = PilingParameter.PermanentLoad(spManager);
+            this.variableLoad = PilingParameter.VariableLoad(spManager);
+            this.verticalWindLoad = PilingParameter.VerticalWindLoad(spManager);
+            this.horizontalWindLoad = PilingParameter.HorizontalWindLoad(spManager);
 
-            _warnIsFamilyDocumentId = new FailureDefinitionId(new Guid("2c644284-59fe-4f5c-b8b3-e89977af7d15"));
-            _warnIsFamilyDocumentDef = FailureDefinition.CreateFailureDefinition(_warnIsFamilyDocumentId, FailureSeverity.Warning, Resources.FailureDefinition_WarnIsFamilyMessage);
+            this.warnIsFamilyDocumentId = new FailureDefinitionId(new Guid("2c644284-59fe-4f5c-b8b3-e89977af7d15"));
+            this.warnIsFamilyDocumentDef = FailureDefinition.CreateFailureDefinition(this.warnIsFamilyDocumentId, FailureSeverity.Warning, Resources.FailureDefinition_WarnIsFamilyMessage);
+
+            this.pilingUpdater = PilingUpdater.Register(addInId, this);
+            this.coordinatePilingUpdater = CoordinatePilingUpdater.Register(addInId, this);
         }
 
-        public static void Register(AddInId addInId)
+        /// <summary>
+        /// Summary goes here.
+        /// </summary>
+        public void UnRegister()
         {
-            ISharedParameterManager parameterManager = new SharedParameterManager();
-            PilingCoordinator coordinator = new PilingCoordinator(parameterManager);
-
-            PilingUpdater.Register(addInId, coordinator);
-            CoordinatePilingUpdater.Register(addInId, coordinator);
+            this.pilingUpdater.UnRegister();
+            this.coordinatePilingUpdater.UnRegister();
         }
 
-        public static void Unregister(AddInId addInId)
+        /// <summary>
+        /// Summary goes here.
+        /// </summary>
+        /// <param name="document">Document param.</param>
+        internal void RegisterDocument(Document document)
         {
-            ISharedParameterManager parameterManager = new SharedParameterManager();
-            PilingCoordinator coordinator = new PilingCoordinator(parameterManager);
-
-            // TODO: Unregister piling updaters.
-            //PilingUpdater.Unregister(addInId, coordinator);
-            //CoordinatePilingUpdater.Unregister(addInId, coordinator);
+            this.easting.Bind(document);
+            this.northing.Bind(document);
+            this.cutOff.Bind(document);
+            this.permanentLoad.Bind(document);
+            this.variableLoad.Bind(document);
+            this.verticalWindLoad.Bind(document);
+            this.horizontalWindLoad.Bind(document);
         }
 
-        public void RegisterDocument(Document document)
-        {
-            _easting.Bind(document);
-            _northing.Bind(document);
-            _cutOff.Bind(document);
-            _permanentLoad.Bind(document);
-            _variableLoad.Bind(document);
-            _verticalWindLoad.Bind(document);
-            _horizontalWindLoad.Bind(document);
-        }
-
-        public void UpdateElement(Document document, ElementId id)
+        /// <summary>
+        /// Summary goes here.
+        /// </summary>
+        /// <param name="document">Document param.</param>
+        /// <param name="id">Element Id param.</param>
+        internal void UpdateElement(Document document, ElementId id)
         {
             if (document == null)
+            {
                 throw new ArgumentNullException(nameof(document));
+            }
 
             if (document.IsFamilyDocument)
             {
-                PostWarningIsFamilyDocument(document, id);
+                this.PostWarningIsFamilyDocument(document, id);
             }
             else
             {
@@ -74,7 +98,7 @@ namespace Jpp.Cedar.Piling
                     {
                         XYZ location = CoordinateHelper.GetWorldCoordinates(document, locationPoint.Point);
 
-                        UpdateParameters(foundation, location);
+                        this.UpdateParameters(foundation, location);
                     }
                 }
             }
@@ -83,16 +107,16 @@ namespace Jpp.Cedar.Piling
         private void UpdateParameters(Element foundation, XYZ location)
         {
             foreach (Parameter para in foundation.Parameters)
-            {           
-                _easting.TrySetParameterValue(para, location.X);
-                _northing.TrySetParameterValue(para, location.Y);
-                _cutOff.TrySetParameterValue(para, location.Z);
+            {
+                this.easting.TrySetParameterValue(para, location.X);
+                this.northing.TrySetParameterValue(para, location.Y);
+                this.cutOff.TrySetParameterValue(para, location.Z);
             }
         }
 
         private void PostWarningIsFamilyDocument(Document document, ElementId id)
         {
-            using (FailureMessage message = new FailureMessage(_warnIsFamilyDocumentId))
+            using (FailureMessage message = new FailureMessage(this.warnIsFamilyDocumentId))
             {
                 message.SetFailingElement(id);
                 document.PostFailure(message);
