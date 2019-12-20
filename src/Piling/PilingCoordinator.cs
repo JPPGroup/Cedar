@@ -39,7 +39,8 @@ namespace Jpp.Cedar.Piling
             ISharedParameterManager parameterManager = new SharedParameterManager();
             PilingCoordinator coordinator = new PilingCoordinator(parameterManager);
 
-            PilingUpdater.Unregister(addInId, coordinator);
+            // TODO: Unregister piling updater.
+            //PilingUpdater.Unregister(addInId, coordinator);
             CoordinatePilingUpdater.Unregister(addInId, coordinator);
         }
 
