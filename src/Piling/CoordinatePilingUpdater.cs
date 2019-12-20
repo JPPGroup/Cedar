@@ -1,9 +1,8 @@
-﻿// <copyright file="PilingUpdater.cs" company="JPP Consulting">
+﻿// <copyright file="CoordinatePilingUpdater.cs" company="JPP Consulting">
 // Copyright (c) JPP Consulting. All rights reserved.
 // </copyright>
 
 using System;
-using System.Collections.Generic;
 using Autodesk.Revit.DB;
 
 namespace Jpp.Cedar.Piling
@@ -11,16 +10,16 @@ namespace Jpp.Cedar.Piling
     /// <summary>
     /// Summary goes here.
     /// </summary>
-    public class PilingUpdater : IUpdater, IDisposable
+    public class CoordinatePilingUpdater : IUpdater, IDisposable
     {
         private readonly UpdaterId updaterId; // TODO: Investigate analyzer warning as the field is disposed.
         private readonly PilingCoordinator pilingCoordinator;
 
         private bool disposed;
 
-        private PilingUpdater(AddInId id, PilingCoordinator coordinator)
+        private CoordinatePilingUpdater(AddInId id, PilingCoordinator coordinator)
         {
-            this.updaterId = new UpdaterId(id, new Guid("ddb23f37-892e-4b43-9e8a-0ad8ff381b2b"));
+            this.updaterId = new UpdaterId(id, new Guid("a066aabd-7ccd-43c3-9a86-b2089ebabb99"));
             this.pilingCoordinator = coordinator ?? throw new ArgumentNullException(nameof(coordinator));
         }
 
@@ -36,20 +35,21 @@ namespace Jpp.Cedar.Piling
 
             this.pilingCoordinator.RegisterDocument(document);
 
-            List<ElementId> modifiedElementIds = new List<ElementId>();
-            modifiedElementIds.AddRange(data.GetAddedElementIds());
-            modifiedElementIds.AddRange(data.GetModifiedElementIds());
-
-            foreach (ElementId id in modifiedElementIds)
+            using (FilteredElementCollector elementCollector = new FilteredElementCollector(document))
             {
-                this.pilingCoordinator.UpdateElement(document, id);
+                FilteredElementCollector foundationCollection = elementCollector.OfCategory(BuiltInCategory.OST_StructuralFoundation);
+
+                foreach (Element element in foundationCollection)
+                {
+                    this.pilingCoordinator.UpdateElement(document, element.Id);
+                }
             }
         }
 
         /// <inheritdoc/>
         public string GetAdditionalInformation()
         {
-            return "Updates all pile coordinates";
+            return "Updates all pile coordinates in response to project coordinate change";
         }
 
         /// <inheritdoc/>
@@ -67,7 +67,7 @@ namespace Jpp.Cedar.Piling
         /// <inheritdoc/>
         public string GetUpdaterName()
         {
-            return "Cedar Pile Updater";
+            return "Cedar Coordinate Pile Updater";
         }
 
         /// <inheritdoc/>
@@ -83,15 +83,14 @@ namespace Jpp.Cedar.Piling
         /// <param name="addInId">AddInId param.</param>
         /// <param name="coordinator">PilingCoordinator param.</param>
         /// <returns>Registered piliing updater.</returns>
-        internal static PilingUpdater Register(AddInId addInId, PilingCoordinator coordinator)
+        internal static CoordinatePilingUpdater Register(AddInId addInId, PilingCoordinator coordinator)
         {
-            PilingUpdater updater = new PilingUpdater(addInId, coordinator);
+            CoordinatePilingUpdater updater = new CoordinatePilingUpdater(addInId, coordinator);
             UpdaterRegistry.RegisterUpdater(updater);
 
-            using (ElementCategoryFilter filter = new ElementCategoryFilter(BuiltInCategory.OST_StructuralFoundation))
+            using (ElementCategoryFilter basePointFilter = new ElementCategoryFilter(BuiltInCategory.OST_ProjectBasePoint))
             {
-                UpdaterRegistry.AddTrigger(updater.GetUpdaterId(), filter, Element.GetChangeTypeGeometry());
-                UpdaterRegistry.AddTrigger(updater.GetUpdaterId(), filter, Element.GetChangeTypeElementAddition());
+                UpdaterRegistry.AddTrigger(updater.GetUpdaterId(), basePointFilter, Element.GetChangeTypeAny());
 
                 return updater;
             }
