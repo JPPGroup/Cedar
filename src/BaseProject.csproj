@@ -36,6 +36,10 @@
     <PreprocessorDefinitions>$(DefineConstants)</PreprocessorDefinitions>
   </PropertyGroup>
 
+  <ItemGroup>
+    <AdditionalFiles Include="../stylecop.json" />
+  </ItemGroup>
+
 
   <ItemGroup>
     <PackageReference Include="Jpp.Cedar.BaseApi.2017" Version="0.0.1" Condition="'$(RevitVersion)'=='2017'" />
@@ -43,6 +47,10 @@
     <PackageReference Include="Microsoft.CodeAnalysis.FxCopAnalyzers" Version="2.9.7">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
+    <PackageReference Include="StyleCop.Analyzers" Version="1.1.118">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers</IncludeAssets>
     </PackageReference>
   </ItemGroup>
 </Project>
