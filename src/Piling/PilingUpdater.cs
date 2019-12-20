@@ -82,7 +82,7 @@ namespace Jpp.Cedar.Piling
         /// </summary>
         /// <param name="addInId">AddInId param.</param>
         /// <param name="coordinator">PilingCoordinator param.</param>
-        /// <returns>Registered piliing updater.</returns>
+        /// <returns>Registered piling updater.</returns>
         internal static PilingUpdater Register(AddInId addInId, PilingCoordinator coordinator)
         {
             PilingUpdater updater = new PilingUpdater(addInId, coordinator);
