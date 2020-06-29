@@ -1,0 +1,33 @@
+trigger: none
+pr: none
+
+schedules:
+- cron: "0 0 * * *"
+  displayName: Daily Build
+  branches:
+    include:
+    - master
+    - features/*
+    - bugfixes/*    
+      
+jobs:
+- job: Build
+  pool:
+    vmImage: 'windows-latest'
+  strategy:
+    matrix:     
+      2022:
+        poolFlag: 2022
+      2021:
+        poolFlag: 2021
+      2020:
+        poolFlag: 2020
+      2019:
+        poolFlag: 2019
+  steps:  
+  - template: pipelinetemplates/build.yml
+    parameters:
+      SolutionName: 'Cedar'    
+      Build: 'Release'
+      PoolFlag: $(poolFlag)
+- template: pipelinetemplates/installerpackage.yml  
