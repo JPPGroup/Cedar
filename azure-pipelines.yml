@@ -8,12 +8,6 @@ trigger:
 
 jobs:
 - job: LaunchBuildVM
-  strategy:
-    matrix:
-      2021:
-        vmName: 'Revit_2021'      
-      2017:
-        vmName: 'Revit_2017'  
   timeoutInMinutes: 10
   pool:
     name: Autodesk
@@ -23,19 +17,36 @@ jobs:
     inputs:
       targetType: 'inline'
       script: |
-        Start-Vm -Name $(vmName)
-        $VM = Get-VM -Name $(vmName)
+        Start-Vm -Name Revit_2018
+        $VM = Get-VM -Name Revit_2018
         while ($VM.State -ne 'Running')
         {
-            $VM = Get-VM -Name $(vmName)
+            $VM = Get-VM -Name Revit_2018
             Start-Sleep -s 15
         }
       
         write-host "The VM is on"
 
+- job: Build
+  strategy:
+    matrix:     
+      2018:
+        vmName: 'Revit_2018'  
+  continueOnError: true
+  timeoutInMinutes: 10
+  pool:
+    name: Autodesk
+    demands: Revit  -equals 2018
+  steps:
+  - task: VSBuild@1
+    inputs:
+      solution: '**\*.sln'
+      clean: true
+      restoreNugetPackages: true
+      msbuildArchitecture: 'x64'
 
 - job: StopBuildVM
-  dependsOn: LaunchBuildVM
+  dependsOn: Build
   timeoutInMinutes: 10
   pool:
     name: Autodesk
@@ -45,5 +56,5 @@ jobs:
     inputs:
       targetType: 'inline'
       script: |
-        Stop-Vm -Name $(vmName) -TurnOff
-        Restore-VMSnapshot -Name 'Base' -VMName $(vmName)  -Confirm:$false
+        Stop-Vm -Name Revit_2018 -TurnOff
+        Restore-VMSnapshot -Name 'Base' -VMName Revit_2018  -Confirm:$false
