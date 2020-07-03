@@ -29,4 +29,4 @@ steps:
     targetType: 'inline'
     script: |
       Stop-Vm -Name Revit_2021 -TurnOff
-      Restore-VMSnapshot -Name 'Base' -VMName Revit_2021
+      Restore-VMSnapshot -Name 'Base' -VMName Revit_2021  -Confirm:$false
