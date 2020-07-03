@@ -14,4 +14,17 @@ steps:
 - task: PowerShell@2
   inputs:
     targetType: 'inline'
-    script: 'Start-Vm -Name Revit_2021'
+    script: |
+      Start-Vm -Name Revit_2021
+      $VM = Get-VM -Name Revit_2021
+      while ($VM.State -ne 'Running')
+      {
+          $VM = Get-VM -Name Revit_2021
+          Start-Sleep -s 15
+      }
+      
+      write-host "The VM is on"
+- task: PowerShell@2
+  inputs:
+    targetType: 'inline'
+    script: 'Stop-Vm -Name Revit_2021'
