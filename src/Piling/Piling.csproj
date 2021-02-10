@@ -4,7 +4,12 @@
 
   <PropertyGroup>
     <RootNamespace>Jpp.Cedar.Piling</RootNamespace>
+    <Company>JPP Consulting</Company>
   </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Jpp.Common.Tooling.Signing" Version="0.4.5" />
+  </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\CedarCore\CedarCore.csproj" />
