@@ -1,9 +1,5 @@
 ﻿using System;
-using System.Reflection;
-using Autodesk.Revit.ApplicationServices;
-using Autodesk.Revit.DB.Events;
 using Autodesk.Revit.UI;
-using Jpp.Cedar.Core;
 using Jpp.Cedar.Piling;
 
 namespace Jpp.Cedar
@@ -50,7 +46,7 @@ namespace Jpp.Cedar
             if (application == null)
                 throw new ArgumentNullException(nameof(application));
 
-            PilingCoordinator.Unregister(application.ActiveAddInId);
+            PilingCoordinator.Unregister();
             return Result.Succeeded;
         }
     }

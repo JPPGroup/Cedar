@@ -24,7 +24,12 @@ namespace Jpp.Cedar.Core
                 //XYZ loc = (basePoint.Location as LocationPoint).Point;
             }*/
 
+#if REVIT2021
+            ProjectPosition projectPosition = document.ActiveProjectLocation.GetProjectPosition(XYZ.Zero);
+#endif
+#if REVIT2017
             ProjectPosition projectPosition = document.ActiveProjectLocation.get_ProjectPosition(XYZ.Zero);
+#endif
             // Create a translation vector for the offsets
             XYZ translationVector = new XYZ(projectPosition.EastWest, projectPosition.NorthSouth, projectPosition.Elevation);
             Transform translationTransform = Transform.CreateTranslation(translationVector);            
