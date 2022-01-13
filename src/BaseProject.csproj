@@ -23,7 +23,7 @@
     <TargetFramework>net452</TargetFramework>
   </PropertyGroup>
 
-  <PropertyGroup Condition="$(Configuration.Contains('2020'))">
+  <PropertyGroup Condition="$(Configuration.Contains('2019'))">
     <RevitVersion>2019</RevitVersion>
     <TargetFramework>net47</TargetFramework>
   </PropertyGroup>
