@@ -27,7 +27,7 @@ namespace Jpp.Cedar.Core
 #if REVIT2021
             ProjectPosition projectPosition = document.ActiveProjectLocation.GetProjectPosition(XYZ.Zero);
 #endif
-#if REVIT2017
+#if REVIT2017 || REVIT2019 || REVIT2020
             ProjectPosition projectPosition = document.ActiveProjectLocation.get_ProjectPosition(XYZ.Zero);
 #endif
             // Create a translation vector for the offsets

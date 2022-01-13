@@ -16,10 +16,6 @@ xcopy "$(TargetDir)*" "C:\ProgramData\Autodesk\Revit\Addins\$(RevitVersion)\Ceda
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Jpp.Common.Tooling.Signing" Version="0.4.5" />
-  </ItemGroup>
-
-  <ItemGroup>
     <ProjectReference Include="..\CedarCore\CedarCore.csproj" />
     <ProjectReference Include="..\Piling\Piling.csproj" />
   </ItemGroup>

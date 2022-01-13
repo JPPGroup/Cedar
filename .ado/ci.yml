@@ -1,14 +1,10 @@
 trigger: none
-pr: none
-
-schedules:
-- cron: "0 0 * * *"
-  displayName: Daily Build
+pr:
+  autoCancel: true
   branches:
     include:
     - master
-    - features/*
-    - bugfixes/*    
+    - release/*
       
 jobs:
 - job: Build
@@ -28,4 +24,3 @@ jobs:
       SolutionName: 'Cedar'    
       Build: 'Release'
       PoolFlag: $(poolFlag)
-- template: pipelinetemplates/installerpackage.yml  
