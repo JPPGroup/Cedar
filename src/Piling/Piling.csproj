@@ -4,6 +4,7 @@
 
   <PropertyGroup>
     <RootNamespace>Jpp.Cedar.Piling</RootNamespace>
+    <Company>JPP Consulting</Company>
   </PropertyGroup>
 
   <ItemGroup>

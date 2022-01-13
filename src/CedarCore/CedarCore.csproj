@@ -4,5 +4,7 @@
 
   <PropertyGroup>
     <RootNamespace>Jpp.Cedar.Core</RootNamespace>
+    <Company>JPP Consulting</Company>
   </PropertyGroup>
+	
 </Project>

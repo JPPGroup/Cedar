@@ -34,13 +34,10 @@ namespace Jpp.Cedar.Piling
             CoordinatePilingUpdater.Register(addInId, coordinator);
         }
 
-        public static void Unregister(AddInId addInId)
+        public static void Unregister()
         {
-            ISharedParameterManager parameterManager = new SharedParameterManager();
-            PilingCoordinator coordinator = new PilingCoordinator(parameterManager);
-
-            PilingUpdater.Unregister(addInId, coordinator);
-            CoordinatePilingUpdater.Unregister(addInId, coordinator);
+            PilingUpdater.Unregister();
+            CoordinatePilingUpdater.Unregister();
         }
 
         public void RegisterDocument(Document document)

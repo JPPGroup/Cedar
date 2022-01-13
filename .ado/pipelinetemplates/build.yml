@@ -5,8 +5,6 @@ parameters:
   default: Release
 - name: PoolFlag
   default: ''
-- name: Package
-  default: true
 
 steps:  
   - checkout: self
@@ -38,26 +36,16 @@ steps:
         Import-PfxCertificate -FilePath $(Cert.secureFilePath) -CertStoreLocation Cert:\LocalMachine\My -Password $Secure_String_Pwd               
    
   - script: |
-      "C:\Program Files\dotnet\dotnet.exe" restore $(Build.SourcesDirectory)\${{ parameters.SolutionName }}.sln --configfile $(System.DefaultWorkingDirectory)\nuget.config --no-cache --verbosity Normal /p:Configuration="${{ parameters.Build }} ${{ parameters.PoolFlag }};Platform=x64"
+      "C:\Program Files\dotnet\dotnet.exe" restore $(Build.SourcesDirectory)\${{ parameters.SolutionName }}.sln --configfile $(System.DefaultWorkingDirectory)\nuget.config --no-cache --verbosity Normal /p:Configuration="${{ parameters.Build }}${{ parameters.PoolFlag }};Platform=x64"
   
   - task: VSBuild@1
     inputs:
       solution: '${{ parameters.SolutionName }}.sln'
       platform: 'x64'
-      configuration: '${{ parameters.Build }} ${{ parameters.PoolFlag }}'
+      configuration: '${{ parameters.Build }}${{ parameters.PoolFlag }}'
       clean: true    
       msbuildArgs: '/p:RunWixToolsOutOfProc=true;Id=.${{ parameters.PoolFlag }}'      
-  
-  - ${{ if eq(parameters.Package, true) }}:
-    - task: DotNetCoreCLI@2
-      inputs: 
-        command: 'pack'
-        packagesToPack: '**\\*Ironstone*.csproj;**\\*ObjectModel.csproj;!**\\*Tests.csproj;!**\\*Base*Project.csproj'      
-        configurationToPack: '${{ parameters.Build }} ${{ parameters.PoolFlag }}'
-        buildProperties: 'Id=.${{ parameters.PoolFlag }};Platform=x64'             
-        nobuild: true      
-        includesymbols: true
-  
+   
   - task: CopyFiles@2
     inputs:
       contents: '$(System.DefaultWorkingDirectory)\**\bin\**'

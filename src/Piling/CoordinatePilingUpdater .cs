@@ -5,7 +5,7 @@ namespace Jpp.Cedar.Piling
 {
     public class CoordinatePilingUpdater : IUpdater
     {
-        private UpdaterId _updaterId;
+        private static UpdaterId _updaterId;
         private PilingCoordinator _pilingCoordinator;      
 
         private bool registered = false;
@@ -53,9 +53,14 @@ namespace Jpp.Cedar.Piling
             return ChangePriority.Structure;
         }
 
-        public UpdaterId GetUpdaterId()
+        public static UpdaterId GetUpdaterId()
         {
             return _updaterId;
+        }
+
+        UpdaterId IUpdater.GetUpdaterId()
+        {
+            return GetUpdaterId();
         }
 
         public string GetUpdaterName()
@@ -69,13 +74,12 @@ namespace Jpp.Cedar.Piling
             UpdaterRegistry.RegisterUpdater(updater);
 
             ElementCategoryFilter basepointFilter = new ElementCategoryFilter(BuiltInCategory.OST_ProjectBasePoint);
-            UpdaterRegistry.AddTrigger(updater.GetUpdaterId(), basepointFilter, Element.GetChangeTypeAny());
+            UpdaterRegistry.AddTrigger(GetUpdaterId(), basepointFilter, Element.GetChangeTypeAny());
         }
 
-        internal static void Unregister(AddInId addInId, PilingCoordinator coordinator)
+        internal static void Unregister()
         {
-            CoordinatePilingUpdater updater = new CoordinatePilingUpdater(addInId, coordinator);
-            UpdaterRegistry.UnregisterUpdater(updater.GetUpdaterId());
+            UpdaterRegistry.UnregisterUpdater(GetUpdaterId());
         }
     }
 }

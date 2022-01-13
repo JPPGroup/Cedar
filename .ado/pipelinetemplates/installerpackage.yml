@@ -4,19 +4,16 @@ jobs:
     vmImage: 'windows-latest'
   strategy:
     matrix:
-      2022:              
-        poolFlag: 2022
-        framework: net472      
       2021:      
         poolFlag: 2021
-        framework: net472
+        framework: net48
       2020:
         poolFlag: 2020
         framework: net472
       2019:
         poolFlag: 2019
         framework: net472
-  dependsOn: Test
+  dependsOn: Build
   steps:      
   - checkout: none
   - download: current
