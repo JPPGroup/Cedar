@@ -9,17 +9,17 @@ jobs:
         framework: net48
       2020:
         poolFlag: 2020
-        framework: net472
+        framework: net47
       2019:
         poolFlag: 2019
-        framework: net472
+        framework: net47
   dependsOn: Build
   steps:      
   - checkout: none
   - download: current
     artifact: Build $(poolFlag)
   - powershell: |
-      Get-ChildItem -Recurse * | Where-Object {$_.FullName.EndsWith("$(framework)") -and $_.FullName.Contains("bin") -and !$_.FullName.Contains("Test")} | Copy-Item -Destination $(System.DefaultWorkingDirectory)\installpackage -force -recurse
+      Get-ChildItem -Recurse * | Where-Object {$_.FullName.EndsWith("$(framework)") -and $_.FullName.Contains("bin") -and !$_.FullName.Contains("Test")} | Copy-Item -Destination $(System.DefaultWorkingDirectory)\installpackage -force -recurse      
     workingDirectory: $(Pipeline.Workspace)\Build $(poolFlag)
     displayName: 'Copy Files'
   - task: ArchiveFiles@2
