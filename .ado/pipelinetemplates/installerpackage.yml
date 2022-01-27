@@ -19,12 +19,16 @@ jobs:
   - download: current
     artifact: Build $(poolFlag)
   - powershell: |
-      Get-ChildItem -Recurse * | Where-Object {$_.FullName.EndsWith("$(framework)") -and $_.FullName.Contains("bin") -and !$_.FullName.Contains("Test")} | Copy-Item -Destination $(System.DefaultWorkingDirectory)\installpackage -force -recurse      
+      New-Item -Path "$(System.DefaultWorkingDirectory)" -Name "installpackage" -ItemType "directory"
+      Get-ChildItem -Recurse * | Where-Object {$_.FullName.EndsWith("$(framework)") -and $_.FullName.Contains("bin") -and !$_.FullName.Contains("Test")} | Copy-Item -Destination $(System.DefaultWorkingDirectory)\installpackage -force -recurse   
+      Rename-Item $(System.DefaultWorkingDirectory)\installpackage\$(framework) $(System.DefaultWorkingDirectory)\installpackage\Cedar      
+      Get-ChildItem -Exclude Cedar $(System.DefaultWorkingDirectory)\installpackage | Remove-Item -Recurse -Force
+      Copy-Item Cedar.addin -Destination $(System.DefaultWorkingDirectory)\installpackage -force    
     workingDirectory: $(Pipeline.Workspace)\Build $(poolFlag)
     displayName: 'Copy Files'
   - task: ArchiveFiles@2
     inputs:
-      rootFolderOrFile: '$(System.DefaultWorkingDirectory)\installpackage\$(framework)' 
+      rootFolderOrFile: '$(System.DefaultWorkingDirectory)\installpackage' 
       includeRootFolder: false
       archiveType: 'zip' # Options: zip, 7z, tar, wim      
       archiveFile: '$(Build.ArtifactStagingDirectory)\$(Build.BuildId).zip'       

@@ -50,6 +50,12 @@ steps:
     inputs:
       contents: '$(System.DefaultWorkingDirectory)\**\bin\**'
       targetFolder: $(Build.ArtifactStagingDirectory)
+      
+  - task: CopyFiles@2
+    inputs:
+      contents: '$(System.DefaultWorkingDirectory)\**\*.addin'
+      targetFolder: $(Build.ArtifactStagingDirectory)
+      flattenFolders: true
 
   - publish: $(Build.ArtifactStagingDirectory)
     artifact: Build ${{ parameters.PoolFlag }}
