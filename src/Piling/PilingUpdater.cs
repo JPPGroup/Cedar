@@ -8,19 +8,11 @@ namespace Jpp.Cedar.Piling
     {
         private static UpdaterId _updaterId;
         private PilingCoordinator _pilingCoordinator;      
-
-        private bool registered = false;
         
         private PilingUpdater(AddInId id, PilingCoordinator coordinator)
         {
-            if (id == null)
-                throw new ArgumentNullException(nameof(id));
-
-            if (coordinator == null)
-                throw new ArgumentNullException(nameof(coordinator));
-
             _updaterId = new UpdaterId(id, new Guid("ddb23f37-892e-4b43-9e8a-0ad8ff381b2b"));
-            _pilingCoordinator = coordinator;
+            _pilingCoordinator = coordinator ?? throw new ArgumentNullException(nameof(coordinator));
         }
 
         public void Execute(UpdaterData data)
@@ -30,11 +22,7 @@ namespace Jpp.Cedar.Piling
 
             Document document = data.GetDocument();
 
-            if (!registered)
-            {
-                registered = true;
-                _pilingCoordinator.RegisterDocument(document);
-            }
+            _pilingCoordinator.RegisterDocument(document);
 
             List<ElementId> modifiedElementIds = new List<ElementId>();
             modifiedElementIds.AddRange(data.GetAddedElementIds());
