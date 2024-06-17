@@ -1,7 +1,7 @@
-﻿using Autodesk.Revit.DB;
-using Autodesk.Revit.ApplicationServices;
+﻿using Autodesk.Revit.ApplicationServices;
+using Autodesk.Revit.DB;
 
-namespace Jpp.Cedar.Core
+namespace JPP.Cedar.Core
 {
     public interface ISharedParameterManager
     {

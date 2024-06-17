@@ -1,12 +1,12 @@
 ﻿using Autodesk.Revit.DB;
 
-namespace Jpp.Cedar.Core
+namespace JPP.Cedar.Core
 {
     public static class CoordinateHelper
     {
         public static XYZ GetWorldCoordinates(Document document, XYZ localCoordinate)
         {
-            if(document == null)
+            if (document == null)
                 throw new System.ArgumentNullException(nameof(document));
 
             if (localCoordinate == null)
@@ -31,7 +31,7 @@ namespace Jpp.Cedar.Core
 #endif
             // Create a translation vector for the offsets
             XYZ translationVector = new XYZ(projectPosition.EastWest, projectPosition.NorthSouth, projectPosition.Elevation);
-            Transform translationTransform = Transform.CreateTranslation(translationVector);            
+            Transform translationTransform = Transform.CreateTranslation(translationVector);
             // Create a rotation for the angle about true north
             //const double angleRatio = Math.PI / 180; // angle conversion factor
             Transform rotationTransform = Transform.CreateRotationAtPoint(XYZ.BasisZ, projectPosition.Angle, XYZ.Zero);

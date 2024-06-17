@@ -1,9 +1,9 @@
-﻿using System;
+﻿using Autodesk.Revit.UI;
+using JPP.Cedar.Piling;
+using System;
 using System.Reflection;
-using Autodesk.Revit.UI;
-using Jpp.Cedar.Piling;
 
-namespace Jpp.Cedar
+namespace JPP.Cedar
 {
     public class CedarApplication : IExternalApplication
     {
@@ -14,15 +14,17 @@ namespace Jpp.Cedar
         /// <returns>Result of add-in load</returns>
         public Result OnStartup(UIControlledApplication application)
         {
-            if(application == null)
+            if (application == null)
                 throw new System.ArgumentNullException(nameof(application));
 
 
-#if DEBUG
-            //TODO: Remove once full UI is in place. Here for debug purposes to show addin is loaded
+
+
             RibbonPanel ribbonPanel = application.CreateRibbonPanel("NewRibbonPanel");
             // Create a push button to trigger a command add it to the ribbon panel.
             string thisAssemblyPath = Assembly.GetExecutingAssembly().Location;
+
+#if DEBUG
             PushButtonData buttonData = new PushButtonData("cmdHelloWorld",
                 "Hello World", thisAssemblyPath, "Walkthrough.HelloWorld");
 

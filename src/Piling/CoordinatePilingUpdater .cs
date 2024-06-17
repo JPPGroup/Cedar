@@ -1,12 +1,12 @@
 ﻿using Autodesk.Revit.DB;
 using System;
 
-namespace Jpp.Cedar.Piling
+namespace JPP.Cedar.Piling
 {
     public class CoordinatePilingUpdater : IUpdater
     {
         private static UpdaterId _updaterId;
-        private PilingCoordinator _pilingCoordinator;      
+        private PilingCoordinator _pilingCoordinator;
 
         private bool registered = false;
 

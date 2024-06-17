@@ -4,7 +4,7 @@ using System;
 using System.Diagnostics;
 using System.IO;
 
-namespace Jpp.Cedar.Core
+namespace JPP.Cedar.Core
 {
     public class SharedParameterManager : ISharedParameterManager
     {
@@ -71,25 +71,29 @@ namespace Jpp.Cedar.Core
             /*using (DefinitionFile defFile = _application.OpenSharedParameterFile())
             {*/
             DefinitionFile defFile = application.OpenSharedParameterFile();
-                DefinitionGroup pilingGroup = defFile.Groups.get_Item(parameter.GroupName);
-                if (pilingGroup == null)
-                {
-                    pilingGroup = defFile.Groups.Create(parameter.GroupName);
-                }
+            DefinitionGroup pilingGroup = defFile.Groups.get_Item(parameter.GroupName);
+            if (pilingGroup == null)
+            {
+                pilingGroup = defFile.Groups.Create(parameter.GroupName);
+            }
 
-                result = pilingGroup.Definitions.get_Item(parameter.Name);
+            result = pilingGroup.Definitions.get_Item(parameter.Name);
 
-                if (result == null)
-                {
-                    ExternalDefinitionCreationOptions newDefinition = new ExternalDefinitionCreationOptions(parameter.Name, parameter.Type);
-                    newDefinition.UserModifiable = parameter.Editable;
-                    newDefinition.Description = parameter.Description;
-                    newDefinition.GUID = parameter.Id;
-                    result = pilingGroup.Definitions.Create(newDefinition);
-                }
+            if (result == null)
+            {
+#if REVIT2022 || REVIT2021 || REVIT2020 || REVIT2019 || REVIT2017
+                ExternalDefinitionCreationOptions newDefinition = new ExternalDefinitionCreationOptions(parameter.Name, parameter.Type);
+#else
+                ExternalDefinitionCreationOptions newDefinition = new ExternalDefinitionCreationOptions(parameter.Name, parameter.Type);
+#endif
+                newDefinition.UserModifiable = parameter.Editable;
+                newDefinition.Description = parameter.Description;
+                newDefinition.GUID = parameter.Id;
+                result = pilingGroup.Definitions.Create(newDefinition);
+            }
 
-                application.SharedParametersFilename = currentPath;
-                return result;
+            application.SharedParametersFilename = currentPath;
+            return result;
             //}
         }
     }

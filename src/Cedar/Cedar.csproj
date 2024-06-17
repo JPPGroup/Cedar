@@ -3,7 +3,7 @@
   <Import Project="..\BaseProject.csproj" />
 
   <PropertyGroup>
-    <RootNamespace>Jpp.Cedar</RootNamespace>
+    <RootNamespace>JPP.Cedar</RootNamespace>
     <Company>JPP Consulting</Company>
   </PropertyGroup>
 
@@ -18,5 +18,17 @@ xcopy "$(TargetDir)*" "C:\ProgramData\Autodesk\Revit\Addins\$(RevitVersion)\Ceda
   <ItemGroup>
     <ProjectReference Include="..\CedarCore\CedarCore.csproj" />
     <ProjectReference Include="..\Piling\Piling.csproj" />
+    <ProjectReference Include="..\Rosetta\Rosetta.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Reference Include="RevitAPI">
+      <HintPath>..\..\..\..\..\..\..\Program Files\Autodesk\Revit 2025\RevitAPI.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="RevitAPIUI">
+      <HintPath>..\..\..\..\..\..\..\Program Files\Autodesk\Revit 2025\RevitAPIUI.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
   </ItemGroup>
 </Project>

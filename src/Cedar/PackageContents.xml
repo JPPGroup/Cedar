@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ApplicationPackage
+  SchemaVersion="1.0"
+  AppVersion="0.2"
+  Name="Cedar"
+  Author="JPP Consulting Ltd."
+  ProductCode="4cfcb794-a383-42fe-8b1a-0be6acd84dcc"
+  UpgradeCode="a7449a6e-6b15-4a7f-9cb2-b1efd4bc3e46">
+  <CompanyDetails 
+    Name="JPP Consulting Ltd."
+    Phone="01604781811"
+    Url="jppuk.net"
+    Email="mail@jppuk.net"
+    />
+  <Components>
+      <RuntimeRequirements
+          OS="Win64"
+          Platform="Revit*" 
+		      SupportPath="./Contents/"
+          SeriesMin="R2025"/>      
+      <ComponentEntry AppName="Cedar"
+                    Version="0.2.0"
+                    ModuleName="./Contents/Cedar.addin"
+                    AppDescription="JPP Tooling"
+                    LoadOnCommandInvocation="False"
+                    LoadOnRevitStartup="True" />
+  </Components>
+</ApplicationPackage>

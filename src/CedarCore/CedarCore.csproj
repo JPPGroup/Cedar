@@ -1,10 +1,13 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
-
   <Import Project="..\BaseProject.csproj" />
-
   <PropertyGroup>
-    <RootNamespace>Jpp.Cedar.Core</RootNamespace>
+    <RootNamespace>JPP.Cedar.Core</RootNamespace>
     <Company>JPP Consulting</Company>
   </PropertyGroup>
-	
+  <ItemGroup>
+    <Reference Include="RevitAPI">
+      <HintPath>..\..\..\..\..\..\..\Program Files\Autodesk\Revit 2025\RevitAPI.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+  </ItemGroup>
 </Project>

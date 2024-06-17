@@ -2,15 +2,15 @@
 using System;
 using System.Collections.Generic;
 
-namespace Jpp.Cedar.Piling
+namespace JPP.Cedar.Piling
 {
     public class PilingUpdater : IUpdater
     {
         private static UpdaterId _updaterId;
-        private PilingCoordinator _pilingCoordinator;      
+        private PilingCoordinator _pilingCoordinator;
 
         private bool registered = false;
-        
+
         private PilingUpdater(AddInId id, PilingCoordinator coordinator)
         {
             if (id == null)

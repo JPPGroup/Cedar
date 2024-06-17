@@ -1,0 +1,42 @@
+<Solution>
+  <Configurations>
+    <BuildType Name="Debug" />
+    <BuildType Name="Debug2025" />
+    <BuildType Name="Release" />
+    <BuildType Name="Release2025" />
+    <Platform Name="Any CPU" />
+    <Platform Name="x64" />
+  </Configurations>
+  <Project Path="src\CedarCore\CedarCore.csproj">
+    <Configuration Solution="*|*" Project="*|x64" />
+    <Configuration Solution="*|Any CPU" Project="*|x64" />
+    <Configuration Solution="*|x64" Project="*|x64" />
+    <Configuration Solution="Debug|*" Project="Debug2025|*" />
+    <Configuration Solution="Release|*" Project="Release2025|*" />
+  </Project>
+  <Project Path="src\Cedar\Cedar.csproj">
+    <Configuration Solution="*|*" Project="*|x64" />
+    <Configuration Solution="*|Any CPU" Project="*|x64" />
+    <Configuration Solution="*|x64" Project="*|x64" />
+    <Configuration Solution="Debug|*" Project="Debug2025|*" />
+    <Configuration Solution="Release|*" Project="Release2025|*" />
+  </Project>
+  <Project Path="src\Piling\Piling.csproj">
+    <Configuration Solution="*|*" Project="*|x64" />
+    <Configuration Solution="*|Any CPU" Project="*|x64" />
+    <Configuration Solution="*|x64" Project="*|x64" />
+    <Configuration Solution="Debug|*" Project="Debug2025|*" />
+    <Configuration Solution="Release|*" Project="Release2025|*" />
+  </Project>
+  <Project Path="src\Rosetta\Rosetta.csproj">
+    <Configuration Solution="*|*" Project="*|x64" />
+    <Configuration Solution="*|Any CPU" Project="*|x64" />
+    <Configuration Solution="*|x64" Project="*|x64" />
+    <Configuration Solution="Debug|*" Project="Debug2025|*" />
+    <Configuration Solution="Release|*" Project="Release2025|*" />
+  </Project>
+  <Project Path="src\StructuralAnalysis\StructuralAnalysis.csproj">
+    <Configuration Solution="Debug2025|*" Project="Debug|*" />
+    <Configuration Solution="Release2025|*" Project="Release|*" />
+  </Project>
+</Solution>

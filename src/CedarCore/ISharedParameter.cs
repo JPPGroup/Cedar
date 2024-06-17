@@ -2,7 +2,7 @@
 using Autodesk.Revit.DB;
 using System;
 
-namespace Jpp.Cedar.Core
+namespace JPP.Cedar.Core
 {
     public interface ISharedParameter
     {
@@ -17,7 +17,7 @@ namespace Jpp.Cedar.Core
         /// <summary>
         /// Gets parameter type.
         /// </summary>
-        ParameterType Type { get; }
+        ForgeTypeId Type { get; }
         /// <summary>
         /// Gets parameter editable.
         /// </summary>
