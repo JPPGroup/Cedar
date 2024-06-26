@@ -5,10 +5,11 @@
   <PropertyGroup>
     <RootNamespace>JPP.Cedar</RootNamespace>
     <Company>JPP Consulting</Company>
+	<CopyLocalLockFileAssemblies>true</CopyLocalLockFileAssemblies>
   </PropertyGroup>
 
   <PropertyGroup>
-    <PostBuildEvent>xcopy "$(SolutionDir)src\Cedar\Cedar.addin" "C:\ProgramData\Autodesk\Revit\Addins\$(RevitVersion)" /y /c
+    <PostBuildEvent>xcopy "$(SolutionDir)src\Cedar\Cedar.addin" "C:\ProgramData\Autodesk\Revit\Addins\$(RevitVersion)" /Y /C
 
 xcopy "$(TargetDir)*" "C:\ProgramData\Autodesk\Revit\Addins\$(RevitVersion)\Cedar" /S /Y /I</PostBuildEvent>
     <SignAssembly>false</SignAssembly>

@@ -39,4 +39,12 @@
     <Configuration Solution="Debug2025|*" Project="Debug|*" />
     <Configuration Solution="Release2025|*" Project="Release|*" />
   </Project>
+  <Project Path="StandardDocuments\StandardDocuments.csproj">
+    <Configuration Solution="Debug2025|*" Project="Debug|*" />
+    <Configuration Solution="Release2025|*" Project="Release|*" />
+  </Project>
+  <Project Path="submodules\OfficeIMO\OfficeIMO.Word\OfficeIMO.Word.csproj">
+    <Configuration Solution="Debug2025|*" Project="Debug|*" />
+    <Configuration Solution="Release2025|*" Project="Release|*" />
+  </Project>
 </Solution>

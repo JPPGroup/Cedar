@@ -4,7 +4,7 @@
     <Name>Cedar</Name>
     <Assembly>Cedar\Cedar.dll</Assembly>
     <AddInId>af995de3-b67f-4bd1-96b8-f0c2da44d780</AddInId>
-    <FullClassName>Jpp.Cedar.CedarApplication</FullClassName>
+    <FullClassName>JPP.Cedar.CedarApplication</FullClassName>
     <VendorId>JPP</VendorId>
     <VendorDescription>JPP Consulting</VendorDescription>
   </AddIn>

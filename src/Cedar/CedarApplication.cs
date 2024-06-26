@@ -20,7 +20,7 @@ namespace JPP.Cedar
 
 
 
-            RibbonPanel ribbonPanel = application.CreateRibbonPanel("NewRibbonPanel");
+            RibbonPanel ribbonPanel = application.CreateRibbonPanel("Cedar");
             // Create a push button to trigger a command add it to the ribbon panel.
             string thisAssemblyPath = Assembly.GetExecutingAssembly().Location;
 
@@ -32,6 +32,10 @@ namespace JPP.Cedar
             pushButton.ToolTip = "Say hello to the entire world.";
             Console.WriteLine("Debug");
 #endif
+
+            PushButtonData saButtonData = new PushButtonData("cmdExportStructuralAnalysis", "Export Structural Analysis", thisAssemblyPath, typeof(ExportStructuralAnalysisCommand).FullName);
+            PushButton saPushButton = ribbonPanel.AddItem(saButtonData) as PushButton;
+            pushButton.ToolTip = "Tooltip here";
 
             PilingCoordinator.Register(application.ActiveAddInId);
 
