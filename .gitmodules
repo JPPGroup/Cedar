@@ -1,0 +1,3 @@
+[submodule "submodules/OfficeIMO"]
+	path = submodules/OfficeIMO
+	url = https://github.com/JPPGroup/OfficeIMO.git
