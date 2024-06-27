@@ -9,10 +9,12 @@ namespace JPP.StructuralAnalysis.Models
     public class GravityAnalysisModel
     {
         public Dictionary<string, AreaBuildup> AreaBuildups { get; }
+        public Dictionary<string, AreaBuildup> WallBuildups { get; }
 
         public GravityAnalysisModel()
         {
             AreaBuildups = new Dictionary<string, AreaBuildup>();
+            WallBuildups = new Dictionary<string, AreaBuildup>();
         }
     }
 }

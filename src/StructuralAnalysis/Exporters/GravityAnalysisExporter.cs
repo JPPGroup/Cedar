@@ -8,12 +8,26 @@ namespace JPP.StructuralAnalysis.Exporters
     {
         public void AddOutput(GravityAnalysisModel input, WordSection bodyReport, WordSection appendix)
         {
-            var heading = bodyReport.AddParagraph("Area Loads");
+            //Buildups
+            var heading = bodyReport.AddParagraph("Buildups");
             heading.Style = WordParagraphStyles.Heading1;
 
-            foreach (var buildup in input.AreaBuildups)
+            //Area Loads
+            var heading1 = bodyReport.AddParagraph("Area Loads");
+            heading1.Style = WordParagraphStyles.Heading2;
+            ExportAreaBuildups(bodyReport, input.AreaBuildups.Values);
+
+            //Wall Loads
+            var heading2 = bodyReport.AddParagraph("Wall Loads");
+            heading2.Style = WordParagraphStyles.Heading2;
+            ExportAreaBuildups(bodyReport, input.WallBuildups.Values);
+        }
+
+        private void ExportAreaBuildups(WordSection bodyReport, IEnumerable<AreaBuildup> areaBuildups)
+        {
+            foreach (var buildup in areaBuildups)
             {
-                var buildupName = bodyReport.AddParagraph(buildup.Value.Name);
+                var buildupName = bodyReport.AddParagraph(buildup.Name);
                 buildupName.Style = WordParagraphStyles.Heading5;
 
                 var breakPara = bodyReport.AddParagraph();
@@ -22,7 +36,7 @@ namespace JPP.StructuralAnalysis.Exporters
                 /*layerTable.WidthType = DocumentFormat.OpenXml.Wordprocessing.TableWidthUnitValues.Pct;
                 layerTable.Width = 200;*/
                 //var elements = bodyReport.AddParagraph();
-                foreach (var l in buildup.Value.Layers)
+                foreach (var l in buildup.Layers)
                 {
                     var row = layerTable.AddRow(3);
                     row.Cells[0].AddParagraph(l.Name).SetAlignment(DocumentFormat.OpenXml.Wordprocessing.JustificationValues.Left);

@@ -4,8 +4,6 @@ using Autodesk.Revit.DB.Structure;
 using JPP.StructuralAnalysis;
 using JPP.StructuralAnalysis.Models;
 using System.Collections.Generic;
-using System.Runtime.Intrinsics.X86;
-using System.Xml.Linq;
 
 namespace JPP.Cedar.Rosetta
 {
@@ -40,26 +38,37 @@ namespace JPP.Cedar.Rosetta
                 {
                     var floorType = f.FloorType;
                     if (!model.AreaBuildups.ContainsKey(floorType.Name))
-                        model.AreaBuildups.Add(floorType.Name, ConvertFloor(floorType));
+                        model.AreaBuildups.Add(floorType.Name, ConvertPanelType(floorType));
+                }
+
+                if (physicalElement is Wall w)
+                {
+                    var wallType = w.WallType;
+                    if (!model.WallBuildups.ContainsKey(wallType.Name))
+                        model.WallBuildups.Add(wallType.Name, ConvertPanelType(wallType));
                 }
             }
 
             return model;
         }
 
-        private AreaBuildup ConvertFloor(FloorType floorType)
+        private AreaBuildup ConvertPanelType(HostObjAttributes panelType)
         {
             var abResult = new AreaBuildup()
             {
-                Name = floorType.Name
+                Name = panelType.Name
             };
 
-            var buildup = floorType.GetCompoundStructure();
+            var buildup = panelType.GetCompoundStructure();
             var layers = buildup.GetLayers();
 
             foreach (var layer in layers)
             {
                 var mat = _rDoc.GetElement(layer.MaterialId) as Material;
+
+                if (mat is null)
+                    continue;
+
                 double thickness = UnitUtils.ConvertFromInternalUnits(layer.Width, UnitTypeId.Meters);
                 double density = 0;
                 var pse = _rDoc.GetElement(mat.StructuralAssetId) as PropertySetElement;
