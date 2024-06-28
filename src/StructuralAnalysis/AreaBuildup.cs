@@ -6,6 +6,8 @@ namespace JPP.StructuralAnalysis
     {
         public string Name { get; init; }
         public List<AreaBuildupLayer> Layers { get; } = new List<AreaBuildupLayer>();
+
+        public double PermanentLoad => Layers.Sum(l => l.AreaLoad);
     }
 
     [DebuggerDisplay("{Name} {AreaLoad} kN/m2")]
