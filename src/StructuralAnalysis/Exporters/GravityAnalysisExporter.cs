@@ -93,27 +93,6 @@ namespace JPP.StructuralAnalysis.Exporters
                 row.Cells[2].Paragraphs[0].Text = $"{(entry.Key.PermanentLoad * entry.Value).ToString("F3")} kN/m";
                 row.Cells[2].Paragraphs[0].SetAlignment(DocumentFormat.OpenXml.Wordprocessing.JustificationValues.Right);
             }
-
-            /*foreach (var l in wall.Layers)
-            {
-                var row = layerTable.AddRow(3);
-                row.Cells[0].Paragraphs[0].Text = l.Name;
-                row.Cells[0].Paragraphs[0].SetAlignment(DocumentFormat.OpenXml.Wordprocessing.JustificationValues.Left);
-                row.Cells[1].Paragraphs[0].Text = $"{l.Density.ToString("F0")} kg/m3 x {l.Thickness.ToString("F3")}m";
-                row.Cells[1].Paragraphs[0].SetAlignment(DocumentFormat.OpenXml.Wordprocessing.JustificationValues.Left);
-                row.Cells[2].Paragraphs[0].Text = $"{l.AreaLoad.ToString("F3")} kN/m2";
-                row.Cells[2].Paragraphs[0].SetAlignment(DocumentFormat.OpenXml.Wordprocessing.JustificationValues.Right);
-            }
-
-
-            var endRow = layerTable.AddRow(3);
-            endRow.Cells[1].Paragraphs[0].Text = "Total Permanent Load";
-            endRow.Cells[1].Paragraphs[0].SetAlignment(DocumentFormat.OpenXml.Wordprocessing.JustificationValues.Left);
-            endRow.Cells[1].Paragraphs[0].Bold = true;
-
-            endRow.Cells[2].Paragraphs[0].Text = $"{buildup.PermanentLoad.ToString("F3")} kN/m2";
-            endRow.Cells[2].Paragraphs[0].SetAlignment(DocumentFormat.OpenXml.Wordprocessing.JustificationValues.Right);
-            endRow.Cells[2].Paragraphs[0].Bold = true;*/
         }
 
         private void WalkWall(AnalyticalWall wall, Dictionary<AreaBuildup, double> entries)
@@ -133,6 +112,30 @@ namespace JPP.StructuralAnalysis.Exporters
                 if (e is AnalyticalWall w)
                 {
                     WalkWall(w, entries);
+                }
+                if (e is AnalyticalFloor f)
+                {
+                    double span = 0.5;
+                    if (f.Orientation != wall.Orientation)
+                    {
+                        if (f.Orientation == Orientation.Horizontal)
+                        {
+                            span = (f.Right - f.Left) / 2;
+                        }
+                        else
+                        {
+                            span = (f.Top - f.Bottom) / 2;
+                        }
+                    }
+
+                    if (entries.ContainsKey(f.Buildup))
+                    {
+                        entries[f.Buildup] += span;
+                    }
+                    else
+                    {
+                        entries.Add(f.Buildup, span);
+                    }
                 }
             }
         }

@@ -125,6 +125,21 @@ namespace JPP.Cedar.Rosetta
                 throw new InvalidOperationException("Non rectangular floors not currently supported");
 
             AnalyticalFloor newFloor = new AnalyticalFloor(points[0], points[1], points[2], points[3]);
+            if (spanAngle == 0)
+            {
+                newFloor.Orientation = Orientation.Horizontal;
+            }
+            else
+            {
+                if (spanAngle == Math.PI / 2)
+                {
+                    newFloor.Orientation = Orientation.Vertical;
+                }
+                else
+                {
+                    throw new InvalidOperationException("Non-orthognonal floor orientation");
+                }
+            }
             newFloor.Buildup = model.AreaBuildups[floorType.Name];
 
             model.Floors.Add(newFloor);
@@ -215,14 +230,6 @@ namespace JPP.Cedar.Rosetta
 
         private void LinkWalls(GravityAnalysisModel model)
         {
-            /*var wallsByLevels = model.Walls.GroupBy(wall => wall.Base).OrderBy(wallgroup => wallgroup.Key);
-            //Skip last level
-            for (int i = wallsByLevels.Count() - 1; i > 0; i--)
-            {
-                var currentLevel = wallsByLevels.ElementAt(i).ToList();
-                var lowerLevel = wallsByLevels.ElementAt(i - 1).ToList();
-            }*/
-
             foreach (AnalyticalWall wall in model.Walls)
             {
                 var matches = model.Walls.Where(w => Math.Abs(w.Top - wall.Base) < TOLERANCE);
@@ -241,6 +248,27 @@ namespace JPP.Cedar.Rosetta
 
         private void LinkFloors(GravityAnalysisModel model)
         {
+            foreach (AnalyticalWall wall in model.Walls)
+            {
+                var matchedFloors = model.Floors.Where(f => Math.Abs(f.Level - wall.Top) < TOLERANCE);
+                foreach (var match in matchedFloors)
+                {
+                    if (wall.Orientation == Orientation.Horizontal)
+                    {
+                        if (Math.Abs(wall.Start.Y - match.Top) < TOLERANCE || Math.Abs(wall.Start.Y - match.Bottom) < TOLERANCE)
+                        {
+                            wall.SupportedElements.Add(match);
+                        }
+                    }
+                    else
+                    {
+                        if (Math.Abs(wall.Start.X - match.Left) < TOLERANCE || Math.Abs(wall.Start.X - match.Right) < TOLERANCE)
+                        {
+                            wall.SupportedElements.Add(match);
+                        }
+                    }
+                }
+            }
         }
     }
 }
