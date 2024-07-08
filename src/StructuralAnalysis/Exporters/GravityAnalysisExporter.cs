@@ -1,5 +1,4 @@
-﻿using DocumentFormat.OpenXml.Bibliography;
-using DocumentFormat.OpenXml.Office2013.Drawing.ChartStyle;
+﻿using DocumentFormat.OpenXml.Vml.Office;
 using JPP.StandardDocuments;
 using JPP.StructuralAnalysis.Models;
 using OfficeIMO.Word;
@@ -80,64 +79,57 @@ namespace JPP.StructuralAnalysis.Exporters
             layerTable.WidthType = DocumentFormat.OpenXml.Wordprocessing.TableWidthUnitValues.Pct;
             layerTable.Width = 5000;
 
-            Dictionary<AreaBuildup, double> entries = new Dictionary<AreaBuildup, double>();
-            WalkWall(wall, entries);
+            /*Dictionary<AreaBuildup, double> entries = new Dictionary<AreaBuildup, double>();
+            WalkWall(wall, entries);*/
 
-            foreach (var entry in entries)
+            foreach (var entry in wall.ContributingPermanentLoads)
             {
                 var row = layerTable.AddRow(3);
-                row.Cells[0].Paragraphs[0].Text = entry.Key.Name;
+                row.Cells[0].Paragraphs[0].Text = entry.Value.Item1.Name;
                 row.Cells[0].Paragraphs[0].SetAlignment(DocumentFormat.OpenXml.Wordprocessing.JustificationValues.Left);
-                row.Cells[1].Paragraphs[0].Text = $"{entry.Key.PermanentLoad.ToString("F3")} kN/m2 x {entry.Value.ToString("F3")}m";
+                row.Cells[1].Paragraphs[0].Text = $"{entry.Value.Item1.PermanentLoad.ToString("F3")} kN/m2 x {entry.Value.Item2.ToString("F3")}m";
                 row.Cells[1].Paragraphs[0].SetAlignment(DocumentFormat.OpenXml.Wordprocessing.JustificationValues.Left);
-                row.Cells[2].Paragraphs[0].Text = $"{(entry.Key.PermanentLoad * entry.Value).ToString("F3")} kN/m";
+                row.Cells[2].Paragraphs[0].Text = $"{(entry.Value.Item1.PermanentLoad * entry.Value.Item2).ToString("F3")} kN/m";
                 row.Cells[2].Paragraphs[0].SetAlignment(DocumentFormat.OpenXml.Wordprocessing.JustificationValues.Right);
             }
+            foreach (var entry in wall.ContributingAdditionalPermanentLoads)
+            {
+                var row = layerTable.AddRow(3);
+                row.Cells[0].Paragraphs[0].Text = entry.Key;
+                row.Cells[0].Paragraphs[0].SetAlignment(DocumentFormat.OpenXml.Wordprocessing.JustificationValues.Left);
+                row.Cells[1].Paragraphs[0].Text = $"{entry.Value.Item1.ToString("F3")} kN/m2 x {entry.Value.Item2.ToString("F3")}m";
+                row.Cells[1].Paragraphs[0].SetAlignment(DocumentFormat.OpenXml.Wordprocessing.JustificationValues.Left);
+                row.Cells[2].Paragraphs[0].Text = $"{(entry.Value.Item1 * entry.Value.Item2).ToString("F3")} kN/m";
+                row.Cells[2].Paragraphs[0].SetAlignment(DocumentFormat.OpenXml.Wordprocessing.JustificationValues.Right);
+            }
+
+            var permRow = layerTable.AddRow(3);
+            permRow.Cells[1].Paragraphs[0].Text = $"Permanent Load at Foundation";
+            permRow.Cells[1].Paragraphs[0].SetAlignment(DocumentFormat.OpenXml.Wordprocessing.JustificationValues.Left);
+            permRow.Cells[1].Paragraphs[0].Bold = true;
+            permRow.Cells[2].Paragraphs[0].Text = $"{wall.PermanentLineLoad.ToString("F3")} kN/m";
+            permRow.Cells[2].Paragraphs[0].SetAlignment(DocumentFormat.OpenXml.Wordprocessing.JustificationValues.Right);
+            permRow.Cells[2].Paragraphs[0].Bold = true;
+
+            foreach (var entry in wall.ContributingAdditionalImposedLoads)
+            {
+                var row = layerTable.AddRow(3);
+                row.Cells[0].Paragraphs[0].Text = entry.Key;
+                row.Cells[0].Paragraphs[0].SetAlignment(DocumentFormat.OpenXml.Wordprocessing.JustificationValues.Left);
+                row.Cells[1].Paragraphs[0].Text = $"{entry.Value.Item1.ToString("F3")} kN/m2 x {entry.Value.Item2.ToString("F3")}m";
+                row.Cells[1].Paragraphs[0].SetAlignment(DocumentFormat.OpenXml.Wordprocessing.JustificationValues.Left);
+                row.Cells[2].Paragraphs[0].Text = $"{(entry.Value.Item1 * entry.Value.Item2).ToString("F3")} kN/m";
+                row.Cells[2].Paragraphs[0].SetAlignment(DocumentFormat.OpenXml.Wordprocessing.JustificationValues.Right);
+            }
+            var impRow = layerTable.AddRow(3);
+            impRow.Cells[1].Paragraphs[0].Text = $"Imposed Load at Foundation";
+            impRow.Cells[1].Paragraphs[0].SetAlignment(DocumentFormat.OpenXml.Wordprocessing.JustificationValues.Left);
+            impRow.Cells[1].Paragraphs[0].Bold = true;
+            impRow.Cells[2].Paragraphs[0].Text = $"{wall.ImposedLineLoad.ToString("F3")} kN/m";
+            impRow.Cells[2].Paragraphs[0].SetAlignment(DocumentFormat.OpenXml.Wordprocessing.JustificationValues.Right);
+            permRow.Cells[2].Paragraphs[0].Bold = true;
         }
 
-        private void WalkWall(AnalyticalWall wall, Dictionary<AreaBuildup, double> entries)
-        {
-            if (entries.ContainsKey(wall.Buildup))
-            {
-                entries[wall.Buildup] += wall.Height;
-            }
-            else
-            {
-                entries.Add(wall.Buildup, wall.Height);
-            }
 
-            //Walk the support chain
-            foreach (AnalyticalElement e in wall.SupportedElements)
-            {
-                if (e is AnalyticalWall w)
-                {
-                    WalkWall(w, entries);
-                }
-                if (e is AnalyticalFloor f)
-                {
-                    double span = 0.5;
-                    if (f.Orientation != wall.Orientation)
-                    {
-                        if (f.Orientation == Orientation.Horizontal)
-                        {
-                            span = (f.Right - f.Left) / 2;
-                        }
-                        else
-                        {
-                            span = (f.Top - f.Bottom) / 2;
-                        }
-                    }
-
-                    if (entries.ContainsKey(f.Buildup))
-                    {
-                        entries[f.Buildup] += span;
-                    }
-                    else
-                    {
-                        entries.Add(f.Buildup, span);
-                    }
-                }
-            }
-        }
     }
 }

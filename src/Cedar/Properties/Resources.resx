@@ -121,6 +121,12 @@
   <data name="Brick" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\Brick.png;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
+  <data name="cmdEnableStructuralAnalysis_Desc" xml:space="preserve">
+    <value />
+  </data>
+  <data name="cmdEnableStructuralAnalysis_Title" xml:space="preserve">
+    <value>Enable Analysis</value>
+  </data>
   <data name="cmdExportStructuralAnalysis_Desc" xml:space="preserve">
     <value>Tooltip here</value>
   </data>

@@ -28,5 +28,13 @@ namespace JPP.StructuralAnalysis.Models
             HorizontalGrids = new List<GridLine>();
             VerticalGrids = new List<GridLine>();
         }
+
+        public void Analyse()
+        {
+            foreach (AnalyticalWall wall in Walls.Where(wall => wall.SupportingElement is null).OrderBy(wall => wall.Name))
+            {
+                wall.WalkWall();
+            }
+        }
     }
 }

@@ -1,11 +1,11 @@
-﻿using Autodesk.Revit.ApplicationServices;
-using Autodesk.Revit.DB;
+﻿using Autodesk.Revit.DB;
 using Autodesk.Revit.DB.Structure;
 using JPP.StructuralAnalysis;
 using JPP.StructuralAnalysis.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text;
 
 namespace JPP.Cedar.Rosetta
 {
@@ -13,13 +13,29 @@ namespace JPP.Cedar.Rosetta
     {
         const double TOLERANCE = 0.0001;
 
-        Application _revitApp;
         Document _rDoc;
+        IEnumerable<AreaLoad> _areas;
 
-        public TranslationEngine(Application revitApp, Document rDoc)
+        public TranslationEngine(Document rDoc)
         {
-            _revitApp = revitApp;
             _rDoc = rDoc;
+        }
+
+        public (bool, string) Verify()
+        {
+            var builder = new StringBuilder("The following errors were found with the model:");
+            var verified = true;
+
+            using ElementCategoryFilter filter = new ElementCategoryFilter(BuiltInCategory.OST_Grids);
+            using FilteredElementCollector collector = new FilteredElementCollector(_rDoc);
+            IList<Element> grids = collector.WherePasses(filter).WhereElementIsNotElementType().ToElements();
+            if (!grids.Any())
+            {
+                builder.AppendLine("No gridlines found");
+                verified = false;
+            }
+
+            return (verified, builder.ToString());
         }
 
         public GravityAnalysisModel GenerateGravityModel()
@@ -80,9 +96,14 @@ namespace JPP.Cedar.Rosetta
             using FilteredElementCollector collector = new FilteredElementCollector(_rDoc);
             IList<Element> panels = collector.WherePasses(filter).WhereElementIsNotElementType().ToElements();
 
+            using ElementCategoryFilter loadFilter = new ElementCategoryFilter(BuiltInCategory.OST_AreaLoads);
+            using FilteredElementCollector loadCollector = new FilteredElementCollector(_rDoc);
+            _areas = loadCollector.WherePasses(loadFilter).WhereElementIsNotElementType().ToElements().Select(l => l as AreaLoad);
+
             foreach (Element panelElement in panels)
             {
                 var aPanel = panelElement as rAnalyticalPanel;
+
                 var physicalElementId = rAnalyticalManager.GetAssociatedElementId(panelElement.Id);
                 var physicalElement = _rDoc.GetElement(physicalElementId);
 
@@ -131,7 +152,7 @@ namespace JPP.Cedar.Rosetta
             }
             else
             {
-                if (spanAngle == Math.PI / 2)
+                if (Math.Abs(spanAngle - Math.PI / 2) < TOLERANCE)
                 {
                     newFloor.Orientation = Orientation.Vertical;
                 }
@@ -141,6 +162,69 @@ namespace JPP.Cedar.Rosetta
                 }
             }
             newFloor.Buildup = model.AreaBuildups[floorType.Name];
+
+            //Hosted loads
+            var hostedLoads = _areas.Where(l => l.IsHosted).Where(l => l.HostElementId == aPanel.Id);
+            foreach (var load in hostedLoads)
+            {
+                /*var loads = (BuiltInCategory)load.LoadCategoryName .Category.Id.Value;
+
+                switch ((BuiltInCategory)load.Category.Id.Value)
+                {
+                    case BuiltInCategory.OST_LoadCasesDead:
+                        if (newFloor.AdditionalPermanentLoads.ContainsKey(load.LoadCaseName))
+                        {
+                            newFloor.AdditionalPermanentLoads[load.LoadCaseName] += UnitUtils.ConvertFromInternalUnits(load.ForceVector1.Z, UnitTypeId.Kilonewtons);
+                        }
+                        else
+                        {
+                            newFloor.AdditionalPermanentLoads[load.LoadCaseName] = UnitUtils.ConvertFromInternalUnits(load.ForceVector1.Z, UnitTypeId.Kilonewtons);
+                        }
+                        break;
+
+                    case BuiltInCategory.OST_LoadCasesLive:
+                    case BuiltInCategory.OST_LoadCasesRoofLive:
+                        if (newFloor.AdditionalImposedLoads.ContainsKey(load.LoadCaseName))
+                        {
+                            newFloor.AdditionalPermanentLoads[load.LoadCaseName] += UnitUtils.ConvertFromInternalUnits(load.ForceVector1.Z, UnitTypeId.Kilonewtons);
+                        }
+                        else
+                        {
+                            newFloor.AdditionalImposedLoads[load.LoadCaseName] = UnitUtils.ConvertFromInternalUnits(load.ForceVector1.Z, UnitTypeId.Kilonewtons);
+                        }
+                        break;
+
+                    default:
+                        throw new InvalidOperationException($"Unsupported load case type {load.LoadCategoryName}");
+                }*/
+                switch (load.LoadNatureName)
+                {
+                    case "Dead":
+                        if (newFloor.AdditionalPermanentLoads.ContainsKey(load.LoadCaseName))
+                        {
+                            newFloor.AdditionalPermanentLoads[load.LoadCaseName] += -UnitUtils.ConvertFromInternalUnits(load.ForceVector1.Z, UnitTypeId.KilonewtonsPerSquareMeter);
+                        }
+                        else
+                        {
+                            newFloor.AdditionalPermanentLoads[load.LoadCaseName] = -UnitUtils.ConvertFromInternalUnits(load.ForceVector1.Z, UnitTypeId.KilonewtonsPerSquareMeter);
+                        }
+                        break;
+
+                    case "Live":
+                        if (newFloor.AdditionalImposedLoads.ContainsKey(load.LoadCaseName))
+                        {
+                            newFloor.AdditionalPermanentLoads[load.LoadCaseName] += -UnitUtils.ConvertFromInternalUnits(load.ForceVector1.Z, UnitTypeId.KilonewtonsPerSquareMeter);
+                        }
+                        else
+                        {
+                            newFloor.AdditionalImposedLoads[load.LoadCaseName] = -UnitUtils.ConvertFromInternalUnits(load.ForceVector1.Z, UnitTypeId.KilonewtonsPerSquareMeter);
+                        }
+                        break;
+
+                    default:
+                        throw new InvalidOperationException($"Unsupported load case type {load.LoadNatureName}");
+                }
+            }
 
             model.Floors.Add(newFloor);
         }

@@ -9,9 +9,9 @@ namespace JPP.Cedar.Rosetta
         {
             return new Point3d()
             {
-                X = point.X,
-                Y = point.Y,
-                Z = point.Z
+                X = UnitUtils.ConvertFromInternalUnits(point.X, UnitTypeId.Meters),
+                Y = UnitUtils.ConvertFromInternalUnits(point.Y, UnitTypeId.Meters),
+                Z = UnitUtils.ConvertFromInternalUnits(point.Z, UnitTypeId.Meters)
             };
         }
     }

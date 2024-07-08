@@ -19,6 +19,12 @@
         public string Name { get; set; }
 
         public double SelfWeightLineLoad => Buildup.PermanentLoad * Height;
+        public double PermanentLineLoad { get; private set; }
+        public double ImposedLineLoad { get; private set; }
+
+        public Dictionary<string, (AreaBuildup, double)> ContributingPermanentLoads { get; private set; }
+        public Dictionary<string, (double, double)> ContributingAdditionalPermanentLoads { get; private set; }
+        public Dictionary<string, (double, double)> ContributingAdditionalImposedLoads { get; private set; }
 
         public AnalyticalWall(Point3d a, Point3d b, Point3d c, Point3d d) : base()
         {
@@ -51,6 +57,80 @@
             }
 
             SupportedElements = new List<AnalyticalElement>();
+            ContributingPermanentLoads = new Dictionary<string, (AreaBuildup, double)>();
+            ContributingAdditionalImposedLoads = new Dictionary<string, (double, double)>();
+            ContributingAdditionalPermanentLoads = new Dictionary<string, (double, double)>();
+        }
+
+        public void WalkWall()
+        {
+            PermanentLineLoad = 0;
+            ImposedLineLoad = 0;
+
+            if (ContributingPermanentLoads.ContainsKey(Buildup.Name))
+            {
+                var (exBuildup, exHeight) = ContributingPermanentLoads[Buildup.Name];
+                exHeight += Height;
+
+                ContributingPermanentLoads[Buildup.Name] = (exBuildup, exHeight);
+            }
+            else
+            {
+                ContributingPermanentLoads.Add(Buildup.Name, (Buildup, Height));
+            }
+
+            //Walk the support chain
+            foreach (AnalyticalElement e in SupportedElements)
+            {
+                if (e is AnalyticalWall w)
+                {
+                    w.WalkWall();
+                }
+                if (e is AnalyticalFloor f)
+                {
+                    double span = 0.5;
+                    if (f.Orientation != Orientation)
+                    {
+                        if (f.Orientation == Orientation.Horizontal)
+                        {
+                            span = (f.Right - f.Left) / 2;
+                        }
+                        else
+                        {
+                            span = (f.Top - f.Bottom) / 2;
+                        }
+                    }
+
+                    if (ContributingPermanentLoads.ContainsKey(f.Buildup.Name))
+                    {
+                        var (exBuildup, exSpan) = ContributingPermanentLoads[f.Buildup.Name];
+                        exSpan += span;
+
+                        ContributingPermanentLoads[f.Buildup.Name] = (exBuildup, exSpan);
+                    }
+                    else
+                    {
+                        ContributingPermanentLoads.Add(f.Buildup.Name, (f.Buildup, span));
+                    }
+
+                    //Handle hosted loads
+                    foreach (var load in f.AdditionalPermanentLoads)
+                    {
+                        ContributingAdditionalPermanentLoads.Add($"{f.Buildup.Name} - {load.Key}", (load.Value, span));
+                        PermanentLineLoad += load.Value * span;
+                    }
+                    foreach (var load in f.AdditionalImposedLoads)
+                    {
+                        ContributingAdditionalImposedLoads.Add($"{f.Buildup.Name} - {load.Key}", (load.Value, span));
+                        ImposedLineLoad += load.Value * span;
+                    }
+                }
+            }
+
+            foreach (var entry in ContributingPermanentLoads)
+            {
+                PermanentLineLoad += entry.Value.Item2 * entry.Value.Item1.PermanentLoad;
+            }
         }
     }
 }

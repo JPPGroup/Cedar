@@ -11,6 +11,9 @@
 
         public Orientation Orientation { get; set; }
 
+        public Dictionary<string, double> AdditionalPermanentLoads { get; private set; }
+        public Dictionary<string, double> AdditionalImposedLoads { get; private set; }
+
         public AnalyticalFloor(Point3d a, Point3d b, Point3d c, Point3d d) : base()
         {
             _boundaryPoints.Add(a);
@@ -30,6 +33,9 @@
 
             Top = _boundaryPoints.Select(p => p.Y).Max();
             Bottom = _boundaryPoints.Select(p => p.Y).Min();
+
+            AdditionalPermanentLoads = new Dictionary<string, double>();
+            AdditionalImposedLoads = new Dictionary<string, double>();
         }
     }
 }

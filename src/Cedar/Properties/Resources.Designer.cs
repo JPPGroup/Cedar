@@ -73,6 +73,24 @@ namespace JPP.Cedar.Properties {
         /// <summary>
         ///   Looks up a localized string similar to .
         /// </summary>
+        internal static string cmdEnableStructuralAnalysis_Desc {
+            get {
+                return ResourceManager.GetString("cmdEnableStructuralAnalysis_Desc", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Enable Analysis.
+        /// </summary>
+        internal static string cmdEnableStructuralAnalysis_Title {
+            get {
+                return ResourceManager.GetString("cmdEnableStructuralAnalysis_Title", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to .
+        /// </summary>
         internal static string cmdExport_Desc {
             get {
                 return ResourceManager.GetString("cmdExport_Desc", resourceCulture);

@@ -1,6 +1,9 @@
-﻿using Autodesk.Revit.UI;
+﻿using Autodesk.Revit.DB;
+using Autodesk.Revit.UI;
 using JPP.Cedar.Piling;
 using JPP.Cedar.Properties;
+using JPP.Cedar.Rosetta;
+using JPP.Cedar.Rosetta.Updaters;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -11,6 +14,13 @@ namespace JPP.Cedar
 {
     public class CedarApplication : IExternalApplication
     {
+        public const string ADD_IN_ID = "af995de3-b67f-4bd1-96b8-f0c2da44d780";
+
+        public static AddInId AddInId
+        {
+            get { return new AddInId(Guid.Parse(ADD_IN_ID)); }
+        }
+
         /// <summary>
         /// Entry point for application
         /// </summary>
@@ -25,6 +35,13 @@ namespace JPP.Cedar
 
             PilingCoordinator.Register(application.ActiveAddInId);
 
+            application.ControlledApplication.DocumentOpened += (o, args) =>
+            {
+                if (RosettaContext.Load(args.Document) is not null)
+                {
+                    new AnalysisUpdater(AddInId).RegisterForDocument(args.Document);
+                }
+            };
 
             return Result.Succeeded;
         }
@@ -35,10 +52,11 @@ namespace JPP.Cedar
             // Create a push button to trigger a command add it to the ribbon panel.
             string thisAssemblyPath = Assembly.GetExecutingAssembly().Location;
 
-            using PushButtonData saButtonData = new PushButtonData("cmdExportStructuralAnalysis", Resources.cmdExportStructuralAnalysis_Title, thisAssemblyPath, typeof(ExportStructuralAnalysisCommand).FullName);
+            using PushButtonData saButtonData = new PushButtonData("cmdEnableStructuralAnalysis", Resources.cmdEnableStructuralAnalysis_Title, thisAssemblyPath, typeof(EnableStructuralAnalysisCommand).FullName);
             saButtonData.LargeImage = GetImage(Resources.Synchronize_Large);
             saButtonData.Image = GetImage(Resources.Synchronize);
             saButtonData.ToolTip = Resources.cmdExportStructuralAnalysis_Desc;
+            saButtonData.AvailabilityClassName = typeof(EnableStructuralAnalysisCommand).FullName;
             PushButton saPushButton = ribbonPanel.AddItem(saButtonData) as PushButton;
 
             // Create two push buttons
